@@ -1,14 +1,26 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ShoppingCart, Download, Shield, Headphones, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useGamesApi } from "@/hooks/useGamesApi";
 
-export default function Product() {
+export default function Product({ id }: { id: string }) {
+  const { game, loading, error, fetchGameById } = useGamesApi(
+    "http://localhost:3000/api/games"
+  );
   const [selectedImage, setSelectedImage] = useState(0);
+
+  useEffect(() => {
+    fetchGameById(id);
+  }, []);
+
+  if (loading) return <div>Caricamento...</div>;
+  if (error) return <div>Errore: {error}</div>;
+  if (!game) return <div>Nessun gioco trovato</div>;
 
   const gameImages = [
     "/elden-ring-hero.png",
@@ -25,8 +37,8 @@ export default function Product() {
           {/* Left - Game Image */}
           <div className="bg-white rounded-lg p-4">
             <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-              <Image
-                src={gameImages[selectedImage] || "/placeholder.svg"}
+              <img
+                src={game.images[0] || "/placeholder.svg"}
                 alt="Elden Ring gameplay screenshot"
                 width={600}
                 height={400}
@@ -34,7 +46,7 @@ export default function Product() {
               />
             </div>
             <div className="flex gap-2 overflow-x-auto">
-              {gameImages.map((image, index) => (
+              {game.images.map((image: string, index: number) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
@@ -60,22 +72,24 @@ export default function Product() {
           <div className="bg-white rounded-lg p-6">
             <div className="flex items-center gap-2 mb-2">
               <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                PS5
+                {game.platform.map((p: string) => p.toUpperCase()).join(", ")}
               </Badge>
               <span className="text-sm text-green-600 font-medium">
-                4 keys available
+                {game.keys.length} keys available
               </span>
             </div>
 
-            <h1 className="text-3xl font-bold mb-2">Elden Ring</h1>
-            <p className="text-gray-600 mb-4">Category: RPG</p>
+            <h1 className="text-3xl font-bold mb-2">{game.title}</h1>
+            <p className="text-gray-600 mb-4">Category: {game.category}</p>
 
             <div className="flex items-center gap-3 mb-6">
-              <span className="text-3xl font-bold text-blue-600">€49.99</span>
-              <span className="text-lg text-gray-400 line-through">€59.99</span>
-              <Badge variant="destructive" className="bg-red-500">
+              <span className="text-3xl font-bold text-blue-600">
+                €{game.price}
+              </span>
+              {/* <span className="text-lg text-gray-400 line-through">€59.99</span> */}
+              {/* <Badge variant="destructive" className="bg-red-500">
                 -17%
-              </Badge>
+              </Badge> */}
             </div>
 
             <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 mb-6">
@@ -120,15 +134,8 @@ export default function Product() {
 
         {/* About Section */}
         <div className="bg-white rounded-lg p-6 mb-8">
-          <h2 className="text-2xl font-bold mb-4">About Elden Ring</h2>
-          <p className="text-gray-700 leading-relaxed">
-            Elden Ring is an action RPG which takes place in the Lands Between,
-            sometime after the Shattering of the titular Elden Ring. The game is
-            played from a third-person perspective, with players freely roaming
-            its interactive open world. Gameplay elements include combat
-            featuring various types of weapons and magic spells, horseback
-            riding, summoning, and crafting.
-          </p>
+          <h2 className="text-2xl font-bold mb-4">{`About ${game.title}`}</h2>
+          <p className="text-gray-700 leading-relaxed">{game.description}</p>
         </div>
 
         {/* System Requirements */}

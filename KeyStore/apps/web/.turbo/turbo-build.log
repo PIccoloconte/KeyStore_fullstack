@@ -6,7 +6,7 @@
    - Environments: .env
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 0ms
+ ✓ Compiled successfully in 5.0s
    Linting and checking validity of types ...
    Collecting page data ...
    Generating static pages (0/9) ...
@@ -18,11 +18,11 @@
    Collecting build traces ...
 
 Route (app)                                 Size  First Load JS
-┌ ○ /                                    7.03 kB         118 kB
+┌ ○ /                                    7.04 kB         118 kB
 ├ ○ /_not-found                            975 B         102 kB
 ├ ○ /cart                                  147 B         102 kB
 ├ ○ /checkout                              147 B         102 kB
-├ ƒ /games/[id]                          10.3 kB         121 kB
+├ ƒ /games/[id]                          10.7 kB         122 kB
 ├ ○ /login                                 147 B         102 kB
 └ ○ /register                              147 B         102 kB
 + First Load JS shared by all             101 kB

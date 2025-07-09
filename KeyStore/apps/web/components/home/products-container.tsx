@@ -14,58 +14,6 @@ export default function ProductsContainer() {
     fetchAllGames();
   }, []);
 
-  // const games = [
-  //   {
-  //     id: 1,
-  //     title: "REMATCH - PC (Steam)",
-  //     price: "18.69 €",
-  //     discount: "-25%",
-  //     image: "/placeholder.svg?height=200&width=350",
-  //     bgColor: "from-blue-500 to-green-400",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Planet Zoo: Asia Animal Pack - PC (Steam)",
-  //     price: "6.21 €",
-  //     discount: "-38%",
-  //     image: "/placeholder.svg?height=200&width=350",
-  //     bgColor: "from-purple-500 to-pink-400",
-  //     dlc: true,
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Broken Arrow - PC (Steam)",
-  //     price: "33.49 €",
-  //     discount: "-32%",
-  //     image: "/placeholder.svg?height=200&width=350",
-  //     bgColor: "from-orange-500 to-yellow-400",
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "Clair Obscur: Expedition 33 - PC (Steam)",
-  //     price: "28.89 €",
-  //     discount: "-62%",
-  //     image: "/placeholder.svg?height=200&width=350",
-  //     bgColor: "from-gray-600 to-gray-400",
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "Elden Ring Nightreign - PC (Steam)",
-  //     price: "31.19 €",
-  //     discount: "-22%",
-  //     image: "/placeholder.svg?height=200&width=350",
-  //     bgColor: "from-blue-600 to-purple-500",
-  //   },
-  //   {
-  //     id: 6,
-  //     title: "Scum - PC (Steam)",
-  //     price: "21.51 €",
-  //     discount: "-52%",
-  //     image: "/placeholder.svg?height=200&width=350",
-  //     bgColor: "from-orange-600 to-red-500",
-  //   },
-  // ];
-
   if (loading) return <div>Caricamento...</div>;
   if (error) return <div>Errore: {error}</div>;
 
@@ -81,8 +29,8 @@ export default function ProductsContainer() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {games.map((game) => (
           <Link
-            key={game.id}
-            href={`/games/${game.id}`}
+            key={game._id}
+            href={`/games/${game._id}`}
             style={{ textDecoration: "none" }}
           >
             <Card className="bg-gray-800 border-gray-700 overflow-hidden cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
@@ -92,7 +40,7 @@ export default function ProductsContainer() {
                   className={`h-48 bg-gradient-to-br ${game.bgColor} relative overflow-hidden`}
                 >
                   <img
-                    src={game.image || "/placeholder.svg"}
+                    src={game.imageUrl || "/placeholder.svg"}
                     alt={game.title}
                     className="w-full h-full object-cover mix-blend-overlay opacity-80"
                   />

@@ -34,6 +34,7 @@ export const createGame = async (req, res) => {
     category: req.body.category,
     platform: req.body.platform,
     imageUrl: req.body.imageUrl,
+    images: req.body.images,
     available: req.body.available,
     keys: req.body.keys,
   });

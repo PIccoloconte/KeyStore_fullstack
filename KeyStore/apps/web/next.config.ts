@@ -18,6 +18,20 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**", // accetta tutte le immagini da Unsplash
+      },
+      {
+        protocol: "https",
+        hostname: "plus.unsplash.com",
+        pathname: "/**", // accetta tutte le immagini da Unsplash
+      },
+    ],
+  },
   /* config options here */
 };
 
