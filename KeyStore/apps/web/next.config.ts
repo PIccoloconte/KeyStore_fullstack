@@ -1,0 +1,39 @@
+import type { NextConfig } from "next";
+
+/*process.env.NODE_ENV è una variabile d'ambiente che Next.js (e Node.js in generale) usa per indicare l'ambiente corrente.
+Se stai eseguendo npm run dev, NODE_ENV sarà "development".
+Se stai eseguendo npm run build e poi npm start, NODE_ENV sarà "production".*/
+
+const isDev = process.env.NODE_ENV === "development";
+const API_URL = isDev
+  ? // ? "http://localhost:3001" // backend locale in sviluppo
+    "http://192.168.205.140:3001" // backend locale in sviluppo con hotspot mobile
+  : process.env.NEXT_PUBLIC_API_URL; // backend deployato in produzione
+
+const nextConfig: NextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${API_URL}/api/:path*`,
+      },
+    ];
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**", // accetta tutte le immagini da Unsplash
+      },
+      {
+        protocol: "https",
+        hostname: "plus.unsplash.com",
+        pathname: "/**", // accetta tutte le immagini da Unsplash
+      },
+    ],
+  },
+  /* config options here */
+};
+
+export default nextConfig;
