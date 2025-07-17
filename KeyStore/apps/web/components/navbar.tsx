@@ -1,12 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { Search, ShoppingCart, User, Monitor, Gamepad2 } from "lucide-react";
+import {
+  Search,
+  ShoppingCart,
+  User,
+  Monitor,
+  Gamepad2,
+  LogIn,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useAuth } from "@/context";
 
 export default function Navbar() {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const { isLoggedIn } = useAuth();
 
   return (
     <nav className="bg-black text-white px-4 py-3 fixed top-0 w-full shadow-md z-50">
@@ -104,13 +113,19 @@ export default function Navbar() {
               <ShoppingCart className="w-5 h-5" />
             </Button>
           </Link>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-white hover:text-orange-500 hover:bg-gray-800 p-2 cursor-pointer"
-          >
-            <User className="w-5 h-5" />
-          </Button>
+          <Link href="/register">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:text-orange-500 hover:bg-gray-800 p-2 cursor-pointer"
+            >
+              {isLoggedIn ? (
+                <User className="w-5 h-5" />
+              ) : (
+                <LogIn className="w-5 h-5" />
+              )}
+            </Button>
+          </Link>
         </div>
       </div>
     </nav>

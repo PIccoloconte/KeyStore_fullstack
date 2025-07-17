@@ -7,9 +7,9 @@ import { useEffect } from "react";
 
 export default function ProductsContainer() {
   const { games, loading, error, fetchAllGames } = useGamesApi(
-    "http://localhost:3000/api/games"
-    // "http://192.168.205.140:3000/api/games"
-    // "http://192.168.2.116:3000/api/games"
+    //"http://localhost:3000/api/games"
+    "http://192.168.205.140:3000/api/games" // hotspot mobile
+    // "http://192.168.2.116:3000/api/games" // wifi portatile
   );
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight, Heart, Trash2 } from "lucide-react";
 
@@ -68,20 +69,24 @@ const CartPreview = () => {
               </div>
             </div>
 
-            <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 mb-4">
-              Next
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Button>
+            <Link href="/cart/checkout" className="w-full">
+              <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 mb-4 cursor-pointer">
+                Next
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
 
             <div className="text-center text-gray-400 text-sm mb-4">or</div>
 
-            <Button
-              variant="ghost"
-              className="w-full text-gray-400 hover:text-white"
-            >
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              Continue shopping
-            </Button>
+            <Link href="/" className="w-full">
+              <Button
+                variant="ghost"
+                className="w-full text-gray-400 bg-black hover:bg-gray-700 cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4 mr-2" />
+                Continue shopping
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
