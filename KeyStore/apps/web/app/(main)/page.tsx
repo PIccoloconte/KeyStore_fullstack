@@ -4,7 +4,7 @@ import SecurityBanner from "@/components/security-banner";
 
 export default function Home() {
   return (
-    <div>
+    <div className="mt-20">
       <section className="relative w-full h-[550px] overflow-hidden">
         <HeroCarousel></HeroCarousel>
       </section>
