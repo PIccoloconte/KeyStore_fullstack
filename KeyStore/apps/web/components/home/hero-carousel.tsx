@@ -10,9 +10,9 @@ export default function HeroCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const { games, loading, error, fetchAllGames } = useGamesApi(
-    // "http://localhost:3000/api/games"
+    "http://localhost:3000/api/games"
     // "http://192.168.205.140:3000/api/games"
-    "http://192.168.2.116:3000/api/games" // Adjust this URL based on your environment
+    //"http://192.168.2.116:3000/api/games" // Adjust this URL based on your environment
   );
 
   useEffect(() => {

@@ -10,9 +10,9 @@ import { useGamesApi } from "@/hooks/useGamesApi";
 
 export default function Product({ id }: { id: string }) {
   const { game, loading, error, fetchGameById } = useGamesApi(
-    // "http://localhost:3000/api/games"
+    "http://localhost:3000/api/games"
     // "http://192.168.205.140:3000/api/games"
-    "http://192.168.2.116:3000/api/games" // Adjust this URL based on your environment
+    //"http://192.168.2.116:3000/api/games" // Adjust this URL based on your environment
   );
   const [selectedImage, setSelectedImage] = useState(0);
 

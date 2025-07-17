@@ -94,18 +94,20 @@ export default function Navbar() {
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3 ">
+          <Link href="/cart">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:text-orange-500 hover:bg-gray-800 p-2 cursor-pointer"
+            >
+              <ShoppingCart className="w-5 h-5" />
+            </Button>
+          </Link>
           <Button
             variant="ghost"
             size="sm"
-            className="text-white hover:text-orange-500 hover:bg-gray-800 p-2"
-          >
-            <ShoppingCart className="w-5 h-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-white hover:text-orange-500 hover:bg-gray-800 p-2"
+            className="text-white hover:text-orange-500 hover:bg-gray-800 p-2 cursor-pointer"
           >
             <User className="w-5 h-5" />
           </Button>
