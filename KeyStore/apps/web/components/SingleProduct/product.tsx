@@ -10,7 +10,9 @@ import { useGamesApi } from "@/hooks/useGamesApi";
 
 export default function Product({ id }: { id: string }) {
   const { game, loading, error, fetchGameById } = useGamesApi(
-    "http://localhost:3000/api/games"
+    // "http://localhost:3000/api/games"
+    // "http://192.168.205.140:3000/api/games"
+    "http://192.168.2.116:3000/api/games" // Adjust this URL based on your environment
   );
   const [selectedImage, setSelectedImage] = useState(0);
 
@@ -22,13 +24,6 @@ export default function Product({ id }: { id: string }) {
   if (error) return <div>Errore: {error}</div>;
   if (!game) return <div>Nessun gioco trovato</div>;
 
-  const gameImages = [
-    "/elden-ring-hero.png",
-    "/placeholder.svg?height=400&width=600&text=Screenshot+1",
-    "/placeholder.svg?height=400&width=600&text=Screenshot+2",
-    "/placeholder.svg?height=400&width=600&text=Screenshot+3",
-    "/placeholder.svg?height=400&width=600&text=Screenshot+4",
-  ];
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-6">
@@ -37,8 +32,8 @@ export default function Product({ id }: { id: string }) {
           {/* Left - Game Image */}
           <div className="bg-white rounded-lg p-4">
             <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-              <img
-                src={game.images[0] || "/placeholder.svg"}
+              <Image
+                src={game.images[selectedImage] || "/placeholder.svg"}
                 alt="Elden Ring gameplay screenshot"
                 width={600}
                 height={400}

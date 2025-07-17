@@ -18,7 +18,7 @@
    Collecting build traces ...
 
 Route (app)                                 Size  First Load JS
-┌ ○ /                                    7.04 kB         118 kB
+┌ ○ /                                    6.43 kB         117 kB
 ├ ○ /_not-found                            975 B         102 kB
 ├ ○ /cart                                  147 B         102 kB
 ├ ○ /checkout                              147 B         102 kB

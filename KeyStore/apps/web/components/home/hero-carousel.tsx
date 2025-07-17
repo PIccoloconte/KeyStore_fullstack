@@ -4,89 +4,60 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useGamesApi } from "../../hooks/useGamesApi";
-
-interface CarouselItem {
-  id: number;
-  title: string;
-  description: string;
-  discount: string;
-  currentPrice: string;
-  originalPrice: string;
-  backgroundImage: string;
-}
-
-const carouselData: CarouselItem[] = [
-  {
-    id: 1,
-    title: "FIFA 24",
-    description:
-      "FIFA 24 is a football simulation video game published by Electronic Arts. The game features the latest teams, players, and stadiums from around the world.",
-    discount: "-29%",
-    currentPrice: "€39.99",
-    originalPrice: "€56.32",
-    backgroundImage: "/placeholder.svg?height=1080&width=1920",
-  },
-  {
-    id: 2,
-    title: "Call of Duty",
-    description:
-      "Experience the ultimate first-person shooter with stunning graphics and intense multiplayer action across various game modes.",
-    discount: "-35%",
-    currentPrice: "€45.99",
-    originalPrice: "€69.99",
-    backgroundImage: "/placeholder.svg?height=1080&width=1920",
-  },
-  {
-    id: 3,
-    title: "Cyberpunk 2077",
-    description:
-      "An open-world, action-adventure RPG set in the megalopolis of Night City, where you play as a cyberpunk mercenary.",
-    discount: "-50%",
-    currentPrice: "€29.99",
-    originalPrice: "€59.99",
-    backgroundImage: "/placeholder.svg?height=1080&width=1920",
-  },
-  {
-    id: 4,
-    title: "Assassin's Creed",
-    description:
-      "Embark on an epic adventure through history in this action-adventure stealth game series with stunning open worlds.",
-    discount: "-40%",
-    currentPrice: "€35.99",
-    originalPrice: "€59.99",
-    backgroundImage: "/placeholder.svg?height=1080&width=1920",
-  },
-];
+import Link from "next/link";
 
 export default function HeroCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const { games, loading, error, fetchAllGames } = useGamesApi(
-    "http://localhost:3000/api/games"
+    // "http://localhost:3000/api/games"
+    // "http://192.168.205.140:3000/api/games"
+    "http://192.168.2.116:3000/api/games" // Adjust this URL based on your environment
   );
 
   useEffect(() => {
     fetchAllGames();
   }, []);
 
+  // Auto-play functionality
   useEffect(() => {
+    if (!games || games.length === 0) return;
     if (!isAutoPlaying) return;
 
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % carouselData.length);
+      setCurrentSlide((prev) => (prev + 1) % Math.min(games.length, 4));
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+  }, [isAutoPlaying, games]);
 
+  useEffect(() => {
+    if (!games || games.length === 0) return;
+    if (isAutoPlaying) return;
+
+    const timeout = setTimeout(() => setIsAutoPlaying(true), 1000);
+
+    return () => clearTimeout(timeout);
+  }, [isAutoPlaying, games]);
+
+  // Handle edge cases
+  if (loading) return <div>Caricamento...</div>;
+  if (error) return <div>Errore: {error}</div>;
+  if (!games || games.length === 0) return <div>Nessun gioco disponibile.</div>;
+
+  const currentItem = games[currentSlide];
+  const slicedGamesToCarousel = games.slice(0, 4);
+
+  // Navigation functions
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % carouselData.length);
+    setCurrentSlide((prev) => (prev + 1) % slicedGamesToCarousel.length);
     setIsAutoPlaying(false);
   };
 
   const prevSlide = () => {
     setCurrentSlide(
-      (prev) => (prev - 1 + carouselData.length) % carouselData.length
+      (prev) =>
+        (prev - 1 + slicedGamesToCarousel.length) % slicedGamesToCarousel.length
     );
     setIsAutoPlaying(false);
   };
@@ -96,23 +67,18 @@ export default function HeroCarousel() {
     setIsAutoPlaying(false);
   };
 
-  const currentItem = carouselData[currentSlide];
-
-  if (loading) return <div>Caricamento...</div>;
-  if (error) return <div>Errore: {error}</div>;
-
   return (
     <>
       {/* Background Image with transition */}
       <div className="absolute inset-0">
-        {carouselData.map((item, index) => (
+        {slicedGamesToCarousel.map((item, index) => (
           <div
-            key={item.id}
+            key={item._id}
             className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${
               index === currentSlide ? "opacity-100" : "opacity-0"
             }`}
             style={{
-              backgroundImage: `url('${item.backgroundImage}')`,
+              backgroundImage: `url('${item.imageUrl}')`,
             }}
           >
             {/* Dark overlay for better text readability */}
@@ -121,63 +87,40 @@ export default function HeroCarousel() {
         ))}
       </div>
 
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <div className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 border-2 sm:border-4 border-white rounded-full"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 sm:w-52 sm:h-52 lg:w-64 lg:h-64 border border-white sm:border-2 rounded-full"></div>
-          {/* Radiating lines */}
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute top-1/2 left-1/2 w-24 sm:w-36 lg:w-48 h-0.5 bg-white origin-left"
-              style={{
-                transform: `translate(-50%, -50%) rotate(${i * 30}deg)`,
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
       <div className="relative h-full flex items-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-xl sm:max-w-2xl lg:max-w-3xl">
             {/* Content */}
             <div className="space-y-4 sm:space-y-6 text-white">
               {/* Discount Badge */}
-              <div className="inline-block">
-                <span className="bg-red-500 text-white px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-semibold">
-                  {currentItem.discount}
-                </span>
-              </div>
+              <div className="inline-block"></div>
 
               {/* Title */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight">
+              <h1 className="text-3xl xl:text-4xl font-bold leading-tight">
                 {currentItem.title}
               </h1>
 
               {/* Description */}
-              <p className="text-gray-200 text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed max-w-lg lg:max-w-2xl">
+              <p className="text-gray-200 text-sm lg:text-lg leading-relaxed max-w-lg lg:max-w-2xl">
                 {currentItem.description}
               </p>
 
               {/* Price */}
               <div className="flex items-center space-x-2 sm:space-x-4">
-                <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
-                  {currentItem.currentPrice}
-                </span>
-                <span className="text-lg sm:text-xl md:text-2xl text-gray-300 line-through">
-                  {currentItem.originalPrice}
+                <span className="text-3xl xl:text-4xl font-bold leading-tight">
+                  {currentItem.price + " €"}
                 </span>
               </div>
 
               {/* CTA Button */}
-              <Button
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold rounded-md transition-colors"
-              >
-                Buy Now
-              </Button>
+              <Link key={currentItem._id} href={`/games/${currentItem._id}`}>
+                <Button
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold rounded-md transition-colors"
+                >
+                  Buy Now
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -202,7 +145,7 @@ export default function HeroCarousel() {
 
       {/* Carousel Dots */}
       <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
-        {carouselData.map((_, index) => (
+        {slicedGamesToCarousel.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
@@ -216,7 +159,7 @@ export default function HeroCarousel() {
 
       {/* Slide Counter (mobile only) */}
       <div className="absolute top-4 right-4 sm:hidden bg-black/30 text-white px-2 py-1 rounded text-sm z-10">
-        {currentSlide + 1} / {carouselData.length}
+        {currentSlide + 1} / {slicedGamesToCarousel.length}
       </div>
     </>
   );
