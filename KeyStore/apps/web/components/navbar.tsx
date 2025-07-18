@@ -9,13 +9,21 @@ import {
   Gamepad2,
   LogIn,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useAuth } from "@/context";
 
 export default function Navbar() {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user, logout } = useAuth();
 
   return (
     <nav className="bg-black text-white px-4 py-3 fixed top-0 w-full shadow-md z-50">
@@ -113,7 +121,43 @@ export default function Navbar() {
               <ShoppingCart className="w-5 h-5" />
             </Button>
           </Link>
-          <Link href="/register">
+
+          {isLoggedIn ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-white hover:text-orange-500 hover:bg-gray-800 p-2 cursor-pointer"
+                >
+                  <User className="w-5 h-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="start">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <Link href={`/user/${user?._id}`}>
+                  <DropdownMenuItem className="cursor-pointer">
+                    Profile
+                  </DropdownMenuItem>
+                </Link>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer" onClick={logout}>
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link href="/login">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:text-orange-500 hover:bg-gray-800 p-2 cursor-pointer"
+              >
+                <LogIn className="w-5 h-5" />
+              </Button>
+            </Link>
+          )}
+          {/* <Link href="/register">
             <Button
               variant="ghost"
               size="sm"
@@ -125,7 +169,7 @@ export default function Navbar() {
                 <LogIn className="w-5 h-5" />
               )}
             </Button>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </nav>

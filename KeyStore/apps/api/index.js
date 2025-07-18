@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
 mongoose
   .connect(process.env.CONNECTION_URL)
   .then(() => {
-    app.listen(PORT, "0.0.0.0", () => {
+    app.listen(PORT, () => {
       // {"0.0.0.0",} aggiunti per permettere l'accesso da IP esterni
       console.log(`Server is running on ${PORT}`);
     });

@@ -81,7 +81,10 @@ const RegisterPage: React.FC = () => {
   const handleSubmit = async (values: RegistrationFormValues) => {
     try {
       setSubmitStatus(null);
-      const res = await fetch("http://192.168.205.140:3000/api/auth/register", {
+      {
+        /*"http://192.168.205.140:3000/api/auth/register" mobile hotspot*/
+      }
+      const res = await fetch("http://localhost:3000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),

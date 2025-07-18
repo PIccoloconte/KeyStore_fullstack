@@ -10,8 +10,8 @@ export default function HeroCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const { games, loading, error, fetchAllGames } = useGamesApi(
-    //"http://localhost:3000/api/games"
-    "http://192.168.205.140:3000/api/games" //hotspot mobile
+    "http://localhost:3000/api/games"
+    // "http://192.168.205.140:3000/api/games" //hotspot mobile
     //"http://192.168.2.116:3000/api/games" // wifi portatile
   );
 

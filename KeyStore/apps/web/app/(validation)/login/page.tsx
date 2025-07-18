@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 // import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -36,6 +37,7 @@ const loginSchema = Yup.object({
 
 const LoginPage: React.FC = () => {
   const { login } = useAuth();
+  const router = useRouter();
   // const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
   const [submitStatus, setSubmitStatus] = React.useState<
@@ -48,28 +50,31 @@ const LoginPage: React.FC = () => {
     password: "",
   };
 
-  const handleLogin = async (username: string, password: string) => {
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-    const data = await res.json();
-    if (data.status === "ok" && data.data) {
-      login(data.data); // Salva il token nel context e localStorage
-      // Puoi anche reindirizzare l’utente dove vuoi
-      // router.push("/");
-    } else {
-      // Gestisci errore login
-    }
-  };
+  // const handleLogin = async (username: string, password: string) => {
+  //   const res = await fetch("/api/login", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ username, password }),
+  //   });
+  //   const data = await res.json();
+  //   if (data.status === "ok" && data.data) {
+  //     login(data.data); // Salva il token nel context e localStorage
+  //     // Puoi anche reindirizzare l’utente dove vuoi
+  //     // router.push("/");
+  //   } else {
+  //     // Gestisci errore login
+  //   }
+  // };
 
   const handleSubmit = async (values: LoginFormValues) => {
     try {
       setSubmitStatus(null);
 
       // Chiamata API al backend per il login
-      const res = await fetch("http://192.168.205.140:3000/api/auth/login", {
+      {
+        /*http://192.168.205.140:3000/api/auth/login mobile hotspot*/
+      }
+      const res = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -81,10 +86,11 @@ const LoginPage: React.FC = () => {
       const data = await res.json();
 
       if (res.ok && data.status === "ok" && data.data) {
-        // Salva il token in localStorage (o usa il tuo context globale)
-        localStorage.setItem("token", data.data);
+        const { _id, username, createdAt } = data.user;
+        login(data.data, { _id, username, createdAt }); // Salva il token e l'utente nel context e localStorage
         setSubmitStatus("success");
-        // Puoi reindirizzare l'utente o aggiornare lo stato globale qui
+        // redirect to home page
+        router.push("/");
       } else {
         setSubmitStatus("error");
       }
