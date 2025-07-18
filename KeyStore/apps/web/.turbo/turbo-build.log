@@ -20,13 +20,13 @@
 Route (app)                                 Size  First Load JS
 ┌ ○ /                                    3.21 kB         117 kB
 ├ ○ /_not-found                            975 B         102 kB
-├ ○ /cart                                  183 B         110 kB
+├ ○ /cart                                  184 B         110 kB
 ├ ○ /cart/checkout                       2.63 kB         113 kB
-├ ○ /cart/purchaseCodes                    143 B         102 kB
-├ ƒ /games/[id]                          5.61 kB         122 kB
-├ ○ /login                               3.71 kB         140 kB
-├ ○ /register                            3.44 kB         143 kB
-└ ƒ /user/[id]                             143 B         102 kB
+├ ○ /cart/purchaseCodes                    140 B         102 kB
+├ ƒ /games/[id]                          5.63 kB         122 kB
+├ ○ /login                               3.74 kB         140 kB
+├ ○ /register                            3.45 kB         143 kB
+└ ƒ /user/[id]                           4.75 kB         116 kB
 + First Load JS shared by all             101 kB
   ├ chunks/315-344666ff270313d4.js       46.3 kB
   ├ chunks/87c73c54-1c052ecde5acfb47.js  53.2 kB

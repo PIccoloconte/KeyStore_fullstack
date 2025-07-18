@@ -6,9 +6,9 @@ Se stai eseguendo npm run build e poi npm start, NODE_ENV sarà "production".*/
 
 const isDev = process.env.NODE_ENV === "development";
 const API_URL = isDev
-  ? "http://localhost:3001" // backend locale in sviluppo
-  : // "http://192.168.205.140:3001" // backend locale in sviluppo con hotspot mobile
-    process.env.NEXT_PUBLIC_API_URL; // backend deployato in produzione
+  ? // ? "http://localhost:3001" // backend locale in sviluppo
+    "http://192.168.205.140:3001" // backend locale in sviluppo con hotspot mobile
+  : process.env.NEXT_PUBLIC_API_URL; // backend deployato in produzione
 
 const nextConfig: NextConfig = {
   async rewrites() {

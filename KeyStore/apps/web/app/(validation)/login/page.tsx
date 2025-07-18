@@ -38,7 +38,6 @@ const loginSchema = Yup.object({
 const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const router = useRouter();
-  // const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
   const [submitStatus, setSubmitStatus] = React.useState<
     "success" | "error" | null
@@ -72,9 +71,10 @@ const LoginPage: React.FC = () => {
 
       // Chiamata API al backend per il login
       {
-        /*http://192.168.205.140:3000/api/auth/login mobile hotspot*/
+        /*http://192.168.205.140:3000/api/auth/login mobile hotspot
+        http://localhost:3000/api/auth/login localhost*/
       }
-      const res = await fetch("http://localhost:3000/api/auth/login", {
+      const res = await fetch("http://192.168.205.140:3000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
