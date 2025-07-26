@@ -23,7 +23,7 @@ import { useAuth } from "@/context";
 
 export default function Navbar() {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-  const { isLoggedIn, user, logout } = useAuth();
+  const { isLoggedIn, user, logout, cartItemsCount } = useAuth();
 
   return (
     <nav className="bg-black text-white px-4 py-3 fixed top-0 w-full shadow-md z-50">
@@ -116,9 +116,14 @@ export default function Navbar() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-white hover:text-orange-500 hover:bg-gray-800 p-2 cursor-pointer"
+              className=" relative text-white hover:text-orange-500 hover:bg-gray-800 p-2 cursor-pointer"
             >
               <ShoppingCart className="w-5 h-5" />
+              {cartItemsCount > 0 && (
+                <span className="absolute -top-1 right-1.5  bg-red-500 text-red text-xs rounded-full px-1">
+                  {cartItemsCount}
+                </span>
+              )}
             </Button>
           </Link>
 

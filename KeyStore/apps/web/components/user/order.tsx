@@ -14,7 +14,7 @@ export default function Order() {
       const token = localStorage.getItem("token");
       //http://localhost:3000/api/orders localhost
       //http://192.168.205.140:3000/api/orders mobile hotspot
-      const res = await fetch("http://192.168.205.140:3000/api/orders", {
+      const res = await fetch("http://localhost:3000/api/orders", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

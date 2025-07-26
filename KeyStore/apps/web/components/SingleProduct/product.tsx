@@ -7,14 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useGamesApi } from "@/hooks/useGamesApi";
+import { useAuth } from "@/context";
 
 export default function Product({ id }: { id: string }) {
   const { game, loading, error, fetchGameById } = useGamesApi(
-    // "http://localhost:3000/api/games"
-    "http://192.168.205.140:3000/api/games" // hotspot mobile
+    "http://localhost:3000/api/games"
+    // "http://192.168.205.140:3000/api/games" // hotspot mobile
     //"http://192.168.2.116:3000/api/games" // wifi portatile
   );
   const [selectedImage, setSelectedImage] = useState(0);
+  const { addToCart } = useAuth();
 
   useEffect(() => {
     fetchGameById(id);
@@ -87,7 +89,18 @@ export default function Product({ id }: { id: string }) {
               </Badge> */}
             </div>
 
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 mb-6">
+            <Button
+              onClick={() =>
+                addToCart(
+                  game._id,
+                  game.price,
+                  game.title,
+                  game.images[0],
+                  game.platform
+                )
+              }
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 mb-6 cursor-pointer"
+            >
               <ShoppingCart className="w-4 h-4 mr-2" />
               Add to Cart
             </Button>
