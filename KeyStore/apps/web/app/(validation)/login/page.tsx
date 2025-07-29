@@ -89,8 +89,14 @@ const LoginPage: React.FC = () => {
         const { _id, username, createdAt } = data.user;
         login(data.data, { _id, username, createdAt }); // Salva il token e l'utente nel context e localStorage
         setSubmitStatus("success");
-        // redirect to home page
-        router.push("/");
+        // controllo se devo reidirizzare l'utente sulla carta dopo aver fatto il login
+        const redirectUrl = localStorage.getItem("redirectAfterLogin");
+        if (redirectUrl) {
+          localStorage.removeItem("redirectAfterLogin");
+          router.push(redirectUrl);
+        } else {
+          router.push("/");
+        }
       } else {
         setSubmitStatus("error");
       }

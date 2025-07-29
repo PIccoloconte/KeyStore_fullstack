@@ -43,6 +43,8 @@ type AuthContextType = {
     platform?: string[]
   ) => Promise<Cart | null>;
   updateCart: (newCart: Cart | null) => void;
+  mergeCartsAfterLogin: () => Promise<void>;
+  removeFromCart: (gameId: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -54,6 +56,8 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {},
   addToCart: async () => null,
   updateCart: () => {},
+  mergeCartsAfterLogin: async () => {},
+  removeFromCart: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -79,21 +83,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => window.removeEventListener("storage", handler);
   }, []);
 
-  // Carica il carrello quando l'utente è autenticato
+  // Carica il carrello quando l'utente è autenticato o dal localStorage se non è loggato
   useEffect(() => {
     const fetchCart = async () => {
       if (isLoggedIn && user) {
         try {
           const token = localStorage.getItem("token");
-          const response = await fetch(
-            // `${process.env.NEXT_PUBLIC_API_URL || ""}/api/cart`,
-            `http://localhost:3000/api/cart`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const response = await fetch(`http://localhost:3000/api/cart`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
           if (response.ok) {
             const cartData = await response.json();
@@ -103,7 +103,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.error("Errore nel recupero del carrello:", error);
         }
       } else {
-        setCart(null);
+        // Carica il carrello dal localStorage per utenti non loggati
+        const guestCart = localStorage.getItem("guestCart");
+        if (guestCart) {
+          setCart(JSON.parse(guestCart));
+        } else {
+          // Inizializza un carrello vuoto per utenti guest
+          setCart({
+            userId: "guest",
+            items: [],
+          });
+        }
       }
     };
 
@@ -127,6 +137,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("user", JSON.stringify(user));
     setIsLoggedIn(true);
     setUser(user);
+
+    // Dopo il login, verifica se c'è un carrello guest da unire
+    mergeCartsAfterLogin();
   };
 
   const logout = () => {
@@ -134,12 +147,72 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     setUser(null);
-    setCart(null);
+
+    // Carica il carrello dal localStorage per l'utente guest
+    const guestCart = localStorage.getItem("guestCart");
+    if (guestCart) {
+      setCart(JSON.parse(guestCart));
+    } else {
+      setCart({
+        userId: "guest",
+        items: [],
+      });
+    }
+
     router.push("/");
   };
 
-  //aggiungere poi che quando non è loggato aggiunge il prodotto al localStorage
-  // e poi quando si logga lo aggiunge al carrello
+  // Funzione per unire i carrelli dopo il login
+  const mergeCartsAfterLogin = async () => {
+    const guestCart = localStorage.getItem("guestCart");
+    if (!guestCart) return;
+
+    const parsedGuestCart: Cart = JSON.parse(guestCart);
+    if (!parsedGuestCart.items || parsedGuestCart.items.length === 0) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      // Per ogni item nel carrello guest, aggiungilo al carrello dell'utente
+      for (const item of parsedGuestCart.items) {
+        await fetch(`http://localhost:3000/api/cart`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            gameId: item.gameId._id,
+            price: item.price,
+            title: item.title,
+            imageUrl: item.imageUrl,
+            platform: item.platform,
+            quantity: item.quantity,
+          }),
+        });
+      }
+
+      // Ricarica il carrello dell'utente
+      const response = await fetch(`http://localhost:3000/api/cart`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const updatedCart = await response.json();
+        setCart(updatedCart);
+
+        // Cancella il carrello guest dopo il merge
+        localStorage.removeItem("guestCart");
+      }
+    } catch (error) {
+      console.error("Errore durante il merge dei carrelli:", error);
+    }
+  };
+
+  // Aggiunta prodotti al carrello (supporta sia utenti loggati che guest)
   const addToCart = async (
     gameId: string,
     price: number,
@@ -147,38 +220,133 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     imageUrl?: string,
     platform?: string[]
   ): Promise<Cart | null> => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token || !user) return null;
+    if (isLoggedIn && user) {
+      // Utente loggato: aggiungi al database
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return null;
 
-      const response = await fetch(
-        // `${process.env.NEXT_PUBLIC_API_URL || ""}/api/cart`,
-        `http://localhost:3000/api/cart`,
-        {
+        const response = await fetch(`http://localhost:3000/api/cart`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ gameId, price, title, imageUrl, platform }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Errore durante l'aggiunta al carrello");
         }
-      );
 
-      if (!response.ok) {
-        throw new Error("Errore durante l'aggiunta al carrello");
+        const updatedCart = await response.json();
+        setCart(updatedCart);
+        return updatedCart;
+      } catch (error) {
+        console.error("Errore nell'aggiunta al carrello:", error);
+        return null;
       }
+    } else {
+      // Utente guest: aggiungi al localStorage
+      try {
+        let guestCart = localStorage.getItem("guestCart");
+        let cartData: Cart;
 
-      const updatedCart = await response.json();
-      setCart(updatedCart);
-      return updatedCart;
-    } catch (error) {
-      console.error("Errore nell'aggiunta al carrello:", error);
-      return null;
+        if (guestCart) {
+          cartData = JSON.parse(guestCart);
+        } else {
+          cartData = {
+            userId: "guest",
+            items: [],
+          };
+        }
+
+        // Verifica se il prodotto è già nel carrello
+        const existingItemIndex = cartData.items.findIndex(
+          (item) => item.gameId._id === gameId
+        );
+
+        if (existingItemIndex >= 0) {
+          // Se la quantità è maggiore o uguale a 0, non aggiungere il prodotto
+          if (cartData.items[existingItemIndex].quantity >= 0) {
+            return cartData;
+          }
+        } else {
+          // Aggiungi nuovo prodotto
+          cartData.items.push({
+            gameId: { _id: gameId },
+            price,
+            title,
+            quantity: 1,
+            imageUrl,
+            platform,
+          });
+        }
+
+        // Aggiorna il localStorage e lo stato
+        localStorage.setItem("guestCart", JSON.stringify(cartData));
+        setCart(cartData);
+        return cartData;
+      } catch (error) {
+        console.error("Errore nell'aggiunta al carrello guest:", error);
+        return null;
+      }
+    }
+  };
+
+  // Rimozione prodotti dal carrello
+  const removeFromCart = async (gameId: string): Promise<void> => {
+    if (isLoggedIn && user) {
+      // Utente loggato: rimuovi dal database
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const response = await fetch(
+          `http://localhost:3000/api/cart/${gameId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Errore durante la rimozione dal carrello");
+        }
+
+        const updatedCart = await response.json();
+        setCart(updatedCart);
+      } catch (error) {
+        console.error("Errore nella rimozione dal carrello:", error);
+      }
+    } else {
+      // Utente guest: rimuovi dal localStorage
+      const guestCart = localStorage.getItem("guestCart");
+      if (!guestCart) return;
+
+      try {
+        const cartData: Cart = JSON.parse(guestCart);
+        cartData.items = cartData.items.filter(
+          (item) => item.gameId._id !== gameId
+        );
+
+        localStorage.setItem("guestCart", JSON.stringify(cartData));
+        setCart(cartData);
+      } catch (error) {
+        console.error("Errore nella rimozione dal carrello guest:", error);
+      }
     }
   };
 
   const updateCart = (newCart: Cart | null) => {
     setCart(newCart);
+
+    // Se l'utente non è loggato, aggiorna anche il localStorage
+    if (!isLoggedIn && newCart) {
+      localStorage.setItem("guestCart", JSON.stringify(newCart));
+    }
   };
 
   return (
@@ -192,6 +360,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         logout,
         addToCart,
         updateCart,
+        mergeCartsAfterLogin,
+        removeFromCart,
       }}
     >
       {children}

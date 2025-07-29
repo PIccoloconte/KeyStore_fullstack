@@ -5,12 +5,14 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight, Heart, Trash2 } from "lucide-react";
 import { useAuth } from "@/context";
+import { useRouter } from "next/navigation";
 
 const CartPreview = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deletingItems, setDeletingItems] = useState<string[]>([]);
   const { isLoggedIn, cart, updateCart } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (isLoggedIn && !cart) {
@@ -84,6 +86,16 @@ const CartPreview = () => {
     } finally {
       setDeletingItems((prev) => prev.filter((id) => id !== gameId));
     }
+  };
+  //gestione del click sul bottone "Next" per il checkout
+  const handleNextClick = (e: React.MouseEvent) => {
+    if (!isLoggedIn) {
+      e.preventDefault(); // Previene la navigazione predefinita del Link
+      // Salva l'URL di destinazione per reindirizzare dopo il login
+      localStorage.setItem("redirectAfterLogin", "/cart");
+      router.push("/login"); // Reindirizza alla pagina di login
+    }
+    // Se l'utente è loggato, il Link funzionerà normalmente
   };
 
   return (
@@ -197,7 +209,10 @@ const CartPreview = () => {
             {cart && cart.items.length > 0 ? (
               <>
                 <Link href="/cart/checkout" className="w-full">
-                  <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 mb-4 cursor-pointer">
+                  <Button
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 mb-4 cursor-pointer"
+                    onClick={handleNextClick}
+                  >
                     Next
                     <ChevronRight className="w-4 h-4 ml-2" />
                   </Button>
