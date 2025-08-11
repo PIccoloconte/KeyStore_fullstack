@@ -1,7 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { ShoppingCart, Download, Shield, Headphones, Star } from "lucide-react";
+import {
+  ShoppingCart,
+  Download,
+  Shield,
+  Headphones,
+  Star,
+  Check,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,7 +23,10 @@ export default function Product({ id }: { id: string }) {
     //"http://192.168.2.116:3000/api/games" // wifi portatile
   );
   const [selectedImage, setSelectedImage] = useState(0);
-  const { addToCart } = useAuth();
+  const { addToCart, isInCart } = useAuth();
+
+  // Controlla se il prodotto è già nel carrello
+  const productInCart = game ? isInCart(game._id) : false;
 
   useEffect(() => {
     fetchGameById(id);
@@ -89,21 +99,31 @@ export default function Product({ id }: { id: string }) {
               </Badge> */}
             </div>
 
-            <Button
-              onClick={() =>
-                addToCart(
-                  game._id,
-                  game.price,
-                  game.title,
-                  game.images[0],
-                  game.platform
-                )
-              }
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 mb-6 cursor-pointer"
-            >
-              <ShoppingCart className="w-4 h-4 mr-2" />
-              Add to Cart
-            </Button>
+            {productInCart ? (
+              <Button
+                disabled
+                className="w-full bg-green-600 hover:bg-green-700 text-white py-3 mb-6 cursor-default"
+              >
+                <Check className="w-4 h-4 mr-2" />
+                In Cart
+              </Button>
+            ) : (
+              <Button
+                onClick={() =>
+                  addToCart(
+                    game._id,
+                    game.price,
+                    game.title,
+                    game.images[0],
+                    game.platform
+                  )
+                }
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 mb-6 cursor-pointer"
+              >
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                Add to Cart
+              </Button>
+            )}
 
             <div className="space-y-3 mb-6">
               <div className="flex items-center gap-3 text-sm text-gray-600">

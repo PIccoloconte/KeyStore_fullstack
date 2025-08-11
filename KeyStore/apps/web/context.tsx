@@ -45,6 +45,7 @@ type AuthContextType = {
   updateCart: (newCart: Cart | null) => void;
   mergeCartsAfterLogin: () => Promise<void>;
   removeFromCart: (gameId: string) => Promise<void>;
+  isInCart: (gameId: string) => boolean;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -58,6 +59,7 @@ const AuthContext = createContext<AuthContextType>({
   updateCart: () => {},
   mergeCartsAfterLogin: async () => {},
   removeFromCart: async () => {},
+  isInCart: () => false,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -348,6 +350,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("guestCart", JSON.stringify(newCart));
     }
   };
+  // Funzione per verificare se un prodotto è già nel carrello
+  const isInCart = (gameId: string): boolean => {
+    if (!cart || !cart.items) return false;
+
+    return cart.items.some((item) => item.gameId._id === gameId);
+  };
 
   return (
     <AuthContext.Provider
@@ -362,6 +370,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         updateCart,
         mergeCartsAfterLogin,
         removeFromCart,
+        isInCart,
       }}
     >
       {children}
