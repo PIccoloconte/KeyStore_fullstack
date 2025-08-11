@@ -22,6 +22,14 @@ const cartItemSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
+  quantity: {
+    type: Number,
+    default: 1,
+  },
+  reservedKeys: {
+    type: [String],
+    default: [],
+  },
 });
 
 const cartSchema = new mongoose.Schema({

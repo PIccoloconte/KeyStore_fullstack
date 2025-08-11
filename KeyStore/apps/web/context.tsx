@@ -19,6 +19,7 @@ type CartItem = {
   quantity: number;
   imageUrl?: string;
   platform?: string[];
+  reservedKeys?: string[];
 };
 
 type Cart = {
@@ -46,6 +47,7 @@ type AuthContextType = {
   mergeCartsAfterLogin: () => Promise<void>;
   removeFromCart: (gameId: string) => Promise<void>;
   isInCart: (gameId: string) => boolean;
+  clearCart: () => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -60,6 +62,7 @@ const AuthContext = createContext<AuthContextType>({
   mergeCartsAfterLogin: async () => {},
   removeFromCart: async () => {},
   isInCart: () => false,
+  clearCart: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -238,6 +241,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
 
         if (!response.ok) {
+          if (response.status === 400) {
+            // Gestisci il caso in cui non ci sono chiavi disponibili
+            const errorData = await response.json();
+            alert(errorData.message); // Mostra un messaggio all'utente
+            return null;
+          }
           throw new Error("Errore durante l'aggiunta al carrello");
         }
 
@@ -249,50 +258,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return null;
       }
     } else {
-      // Utente guest: aggiungi al localStorage
-      try {
-        let guestCart = localStorage.getItem("guestCart");
-        let cartData: Cart;
-
-        if (guestCart) {
-          cartData = JSON.parse(guestCart);
-        } else {
-          cartData = {
-            userId: "guest",
-            items: [],
-          };
-        }
-
-        // Verifica se il prodotto è già nel carrello
-        const existingItemIndex = cartData.items.findIndex(
-          (item) => item.gameId._id === gameId
-        );
-
-        if (existingItemIndex >= 0) {
-          // Se la quantità è maggiore o uguale a 0, non aggiungere il prodotto
-          if (cartData.items[existingItemIndex].quantity >= 0) {
-            return cartData;
-          }
-        } else {
-          // Aggiungi nuovo prodotto
-          cartData.items.push({
-            gameId: { _id: gameId },
-            price,
-            title,
-            quantity: 1,
-            imageUrl,
-            platform,
-          });
-        }
-
-        // Aggiorna il localStorage e lo stato
-        localStorage.setItem("guestCart", JSON.stringify(cartData));
-        setCart(cartData);
-        return cartData;
-      } catch (error) {
-        console.error("Errore nell'aggiunta al carrello guest:", error);
-        return null;
-      }
+      // Per utenti guest, dovremmo reindirizzare al login per gestire le chiavi
+      alert(
+        "Per acquistare questo prodotto, è necessario effettuare l'accesso."
+      );
+      router.push("/login");
+      return null;
     }
   };
 
@@ -350,11 +321,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("guestCart", JSON.stringify(newCart));
     }
   };
+
   // Funzione per verificare se un prodotto è già nel carrello
   const isInCart = (gameId: string): boolean => {
     if (!cart || !cart.items) return false;
 
     return cart.items.some((item) => item.gameId._id === gameId);
+  };
+
+  // Funzione per svuotare il carrello dopo il checkout
+  const clearCart = () => {
+    setCart(null);
+    // Rimuove anche il carrello guest dal localStorage se presente
+    localStorage.removeItem("guestCart");
   };
 
   return (
@@ -371,6 +350,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         mergeCartsAfterLogin,
         removeFromCart,
         isInCart,
+        clearCart,
       }}
     >
       {children}

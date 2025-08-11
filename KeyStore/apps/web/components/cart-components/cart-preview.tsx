@@ -92,7 +92,7 @@ const CartPreview = () => {
     if (!isLoggedIn) {
       e.preventDefault(); // Previene la navigazione predefinita del Link
       // Salva l'URL di destinazione per reindirizzare dopo il login
-      localStorage.setItem("redirectAfterLogin", "/cart");
+      localStorage.setItem("redirectAfterLogin", "/cart/checkout");
       router.push("/login"); // Reindirizza alla pagina di login
     }
     // Se l'utente è loggato, il Link funzionerà normalmente

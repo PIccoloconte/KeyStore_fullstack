@@ -81,9 +81,17 @@ export default function Product({ id }: { id: string }) {
               <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                 {game.platform.map((p: string) => p.toUpperCase()).join(", ")}
               </Badge>
-              <span className="text-sm text-green-600 font-medium">
-                {game.keys.length} keys available
-              </span>
+
+              {/* Mostra la disponibilità delle chiavi */}
+              {game.keys && game.keys.length > 0 ? (
+                <span className="text-sm text-green-600 font-medium">
+                  {game.keys.length} keys available
+                </span>
+              ) : (
+                <span className="text-sm text-red-600 font-medium">
+                  Non disponibile
+                </span>
+              )}
             </div>
 
             <h1 className="text-3xl font-bold mb-2">{game.title}</h1>
@@ -107,7 +115,7 @@ export default function Product({ id }: { id: string }) {
                 <Check className="w-4 h-4 mr-2" />
                 In Cart
               </Button>
-            ) : (
+            ) : game.keys && game.keys.length > 0 ? (
               <Button
                 onClick={() =>
                   addToCart(
@@ -122,6 +130,13 @@ export default function Product({ id }: { id: string }) {
               >
                 <ShoppingCart className="w-4 h-4 mr-2" />
                 Add to Cart
+              </Button>
+            ) : (
+              <Button
+                disabled
+                className="w-full bg-gray-400 text-white py-3 mb-6 cursor-not-allowed"
+              >
+                Non disponibile
               </Button>
             )}
 

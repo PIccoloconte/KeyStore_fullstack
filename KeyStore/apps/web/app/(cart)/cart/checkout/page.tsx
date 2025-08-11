@@ -1,12 +1,73 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Edit, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/context";
 
 const Checkout = () => {
   const [selectedPayment, setSelectedPayment] = useState("revolut");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { cart, isLoggedIn, clearCart } = useAuth();
+  const router = useRouter();
+
+  const handlePayment = async () => {
+    if (!isLoggedIn) {
+      alert("È necessario effettuare l'accesso per completare l'acquisto");
+      router.push("/login");
+      return;
+    }
+
+    if (!cart || cart.items.length === 0) {
+      alert("Il carrello è vuoto");
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token non trovato");
+      }
+
+      const response = await fetch("http://localhost:3000/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Errore durante il pagamento");
+      }
+
+      const orderData = await response.json();
+
+      // Svuota il carrello dopo l'acquisto riuscito
+      clearCart();
+
+      // Reindirizza alla pagina dei codici di attivazione con gli ordini
+      router.push(
+        `/cart/purchaseCodes?orders=${encodeURIComponent(
+          JSON.stringify(orderData.orders)
+        )}`
+      );
+    } catch (error) {
+      console.error("Errore durante il pagamento:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Errore durante il pagamento. Riprova."
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
@@ -92,16 +153,28 @@ const Checkout = () => {
           <h2 className="text-xl font-medium mb-4">Summary</h2>
           <Card className="bg-gray-800 border-gray-700">
             <CardContent className="p-6 space-y-6">
-              {/* Product */}
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="font-medium text-sm mb-1">
-                    Clair Obscur: Expedition 33 Deluxe Editi...
+              {/* Products */}
+              {cart &&
+                cart.items.map((item, index) => (
+                  <div key={index} className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="font-medium text-sm mb-1">
+                        {item.title}
+                      </div>
+                      <div className="text-gray-400 text-sm">
+                        {item.platform?.join(", ") || "Digital"}
+                      </div>
+                      {item.quantity > 1 && (
+                        <div className="text-gray-400 text-sm">
+                          Quantity: {item.quantity}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-gray-400 ml-4">
+                      €{(item.price * (item.quantity || 1)).toFixed(2)}
+                    </div>
                   </div>
-                  <div className="text-gray-400 text-sm">Steam</div>
-                </div>
-                <div className="text-gray-400 ml-4">34.00 €</div>
-              </div>
+                ))}
 
               {/* Gift Card Notice */}
               <div className="flex items-start space-x-2 text-sm text-gray-400">
@@ -122,12 +195,27 @@ const Checkout = () => {
                 {/* Total */}
                 <div className="flex justify-between text-lg font-medium">
                   <span>Total</span>
-                  <span>34 €</span>
+                  <span>
+                    €
+                    {cart
+                      ? cart.items
+                          .reduce(
+                            (total, item) =>
+                              total + item.price * (item.quantity || 1),
+                            0
+                          )
+                          .toFixed(2)
+                      : "0.00"}
+                  </span>
                 </div>
 
                 {/* Payment Button */}
-                <Button className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 font-medium py-3 mt-6 transition-all duration-200">
-                  Pay
+                <Button
+                  onClick={handlePayment}
+                  disabled={isProcessing}
+                  className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 font-medium py-3 mt-6 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isProcessing ? "Processing..." : "Pay"}
                 </Button>
               </div>
             </CardContent>
