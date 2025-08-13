@@ -1,5 +1,5 @@
 "use client";
-
+//tornare qua se qualcosa va storto
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Edit, Gift } from "lucide-react";
@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context";
 
 const Checkout = () => {
-  const [selectedPayment, setSelectedPayment] = useState("revolut");
+  const [selectedPayment, setSelectedPayment] = useState("credit-card");
   const [isProcessing, setIsProcessing] = useState(false);
   const { cart, isLoggedIn, clearCart } = useAuth();
   const router = useRouter();
@@ -101,6 +101,86 @@ const Checkout = () => {
           <div>
             <h2 className="text-xl font-medium mb-4">Payment methods</h2>
             <div className="space-y-3">
+              {/* Credit Card */}
+              <Card
+                className={`bg-gray-800 cursor-pointer transition-colors ${
+                  selectedPayment === "credit-card"
+                    ? "border-orange-500 border-2"
+                    : "border-gray-700 hover:border-gray-600"
+                }`}
+                onClick={() => setSelectedPayment("credit-card")}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                      <svg
+                        className="w-5 h-5 text-white"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+                      </svg>
+                    </div>
+                    <span className="font-medium">Credit Card</span>
+                  </div>
+
+                  {/* Credit Card Form */}
+                  {selectedPayment === "credit-card" && (
+                    <div className="mt-4 pt-4 border-t border-gray-700">
+                      <form className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-1">
+                            Card Number
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="1234 5678 9012 3456"
+                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                            maxLength={19}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">
+                              Expiry Date
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="MM/YY"
+                              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                              maxLength={5}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">
+                              CVV
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="123"
+                              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                              maxLength={4}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-1">
+                            Cardholder Name
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="John Doe"
+                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                          />
+                        </div>
+                      </form>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
               {/* Apple Pay */}
               <Card
                 className={`bg-gray-800 border-gray-700 cursor-pointer transition-colors ${
@@ -126,21 +206,21 @@ const Checkout = () => {
                 </CardContent>
               </Card>
 
-              {/* Revolut Pay */}
+              {/* PayPal Pay */}
               <Card
                 className={`bg-gray-800 cursor-pointer transition-colors ${
-                  selectedPayment === "revolut"
+                  selectedPayment === "PayPal"
                     ? "border-orange-500 border-2"
                     : "border-gray-700 hover:border-gray-600"
                 }`}
-                onClick={() => setSelectedPayment("revolut")}
+                onClick={() => setSelectedPayment("PayPal")}
               >
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">R</span>
+                      <span className="text-white font-bold text-sm">PP</span>
                     </div>
-                    <span className="font-medium">Revolut Pay</span>
+                    <span className="font-medium">PayPal</span>
                   </div>
                 </CardContent>
               </Card>
@@ -213,7 +293,7 @@ const Checkout = () => {
                 <Button
                   onClick={handlePayment}
                   disabled={isProcessing}
-                  className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 font-medium py-3 mt-6 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 font-medium py-3 mt-6 cursor-pointer"
                 >
                   {isProcessing ? "Processing..." : "Pay"}
                 </Button>

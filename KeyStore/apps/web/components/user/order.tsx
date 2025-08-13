@@ -46,9 +46,9 @@ export default function Order() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-semibold mb-8">My orders</h1>
 
-        <div className="space-y-6">
+        <div className="flex flex-col-reverse gap-4">
           {orders.map((order: any) => (
-            <Card key={order.pricePaid} className="bg-gray-800 border-gray-700">
+            <Card key={order._id} className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 {/* Order Header */}
                 <div className="flex items-start gap-4 mb-6">
@@ -67,14 +67,13 @@ export default function Order() {
                       {order.gameId.platform.map((el: any) => (
                         <Badge
                           variant="outline"
-                          className="border-red-600 text-white"
+                          className="border-orange-500 text-white"
                           key={el}
                         >
                           {" " + el}
                         </Badge>
                       ))}
                     </div>
-                    <p className="text-gray-400 text-sm mb-1">System: Steam</p>
                   </div>
                   <div className="flex flex-col items-end gap-2">
                     <Badge
@@ -110,6 +109,13 @@ export default function Order() {
                       {order.pricePaid} €
                     </span>
                   </div>
+                  <Separator className="bg-gray-700" />
+                  <div className="flex justify-between font-medium">
+                    <span className="text-white">Key</span>
+                    <span className="text-white text-lg uppercase">
+                      {order.keyAssigned}
+                    </span>
+                  </div>
                 </div>
 
                 <Separator className="bg-gray-700 mb-4" />
@@ -118,8 +124,7 @@ export default function Order() {
                 <div className="flex items-center justify-between text-sm text-gray-400">
                   <div className="flex items-center gap-4">
                     <span>Order #{order._id}</span>
-                    <span>•</span>
-                    <span>Paypal</span>
+
                     <span>•</span>
                     <span>{formatDate(order.createdAt ?? "")}</span>
                   </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CreditCard, Copy, CheckCircle } from "lucide-react";
@@ -17,7 +17,8 @@ interface Order {
   createdAt: string;
 }
 
-const PurchaseCodes = () => {
+// Componente separato che usa useSearchParams
+const PurchaseCodesContent = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [copiedKeys, setCopiedKeys] = useState<string[]>([]);
   const searchParams = useSearchParams();
@@ -68,7 +69,7 @@ const PurchaseCodes = () => {
           I tuoi codici di attivazione
         </h1>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 ">
           {orders.map((order) => (
             <div
               key={order._id}
@@ -100,7 +101,7 @@ const PurchaseCodes = () => {
 
               {/* Activation Code */}
               <div className="bg-gray-900 rounded-lg p-4 mb-6">
-                <code className="text-white text-lg font-mono tracking-wider break-all">
+                <code className="text-white text-lg font-mono tracking-wider break-all uppercase">
                   {order.keyAssigned}
                 </code>
               </div>
@@ -150,6 +151,27 @@ const PurchaseCodes = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// Componente di loading per Suspense
+const LoadingComponent = () => (
+  <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+    <div className="text-white text-center">
+      <h2 className="text-2xl font-bold mb-4">Caricamento...</h2>
+      <p className="text-gray-400">
+        Preparazione dei tuoi codici di attivazione...
+      </p>
+    </div>
+  </div>
+);
+
+// Componente principale con Suspense
+const PurchaseCodes = () => {
+  return (
+    <Suspense fallback={<LoadingComponent />}>
+      <PurchaseCodesContent />
+    </Suspense>
   );
 };
 
