@@ -1,19 +1,102 @@
 "use client";
 //tornare qua se qualcosa va storto
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Edit, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { handlePayPalPayment, handleApplePayPayment } from "@/utils"; // Importa la funzione PayPal dal file utils
+
+// Schema di validazione per i metodi di pagamento
+const creditCardSchema = Yup.object().shape({
+  cardNumber: Yup.string()
+    .required("Numero carta obbligatorio")
+    .matches(
+      /^\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/,
+      "Formato numero carta non valido"
+    )
+    .test("luhn", "Numero carta non valido", (value) => {
+      if (!value) return false;
+      const number = value.replace(/\s/g, "");
+      let sum = 0;
+      let alternate = false;
+      for (let i = number.length - 1; i >= 0; i--) {
+        let n = parseInt(number.charAt(i), 10);
+        if (alternate) {
+          n *= 2;
+          if (n > 9) n = (n % 10) + 1;
+        }
+        sum += n;
+        alternate = !alternate;
+      }
+      return sum % 10 === 0;
+    }),
+  expiryDate: Yup.string()
+    .required("Data scadenza obbligatoria")
+    .matches(/^(0[1-9]|1[0-2])\/\d{2}$/, "Formato MM/YY richiesto")
+    .test("expiry", "Carta scaduta", (value) => {
+      if (!value) return false;
+      const [month, year] = value.split("/");
+      const expiry = new Date(2000 + parseInt(year), parseInt(month) - 1);
+      const now = new Date();
+      return expiry > now;
+    }),
+  cvv: Yup.string()
+    .required("CVV obbligatorio")
+    .matches(/^\d{3,4}$/, "CVV deve essere di 3 o 4 cifre"),
+  cardholderName: Yup.string()
+    .required("Nome titolare obbligatorio")
+    .min(2, "Nome troppo corto")
+    .matches(/^[a-zA-Z\s]+$/, "Solo lettere e spazi permessi"),
+});
 
 const Checkout = () => {
   const [selectedPayment, setSelectedPayment] = useState("credit-card");
   const [isProcessing, setIsProcessing] = useState(false);
+  //creditCardFormRef serve per accedere a formik da fuori il componente
+  const creditCardFormRef = useRef<any>(null);
+  const [creditCardFormValid, setCreditCardFormValid] = useState(false);
   const { cart, isLoggedIn, clearCart } = useAuth();
   const router = useRouter();
 
-  const handlePayment = async () => {
+  // Valori iniziali per il form della carta di credito
+  const initialCreditCardValues = {
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    cardholderName: "",
+  };
+
+  // Funzione per formattare il numero della carta
+  const formatCardNumber = (value: string) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    const matches = v.match(/\d{4,16}/g);
+    const match = (matches && matches[0]) || "";
+    const parts = [];
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+    if (parts.length) {
+      return parts.join(" ");
+    } else {
+      return v;
+    }
+  };
+
+  // Funzione per formattare la data di scadenza
+  const formatExpiryDate = (value: string) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    if (v.length >= 2) {
+      return v.substring(0, 2) + "/" + v.substring(2, 4);
+    }
+    return v;
+  };
+
+  //gestione pagamento
+  const handlePayment = async (creditCardData?: any) => {
     if (!isLoggedIn) {
       alert("È necessario effettuare l'accesso per completare l'acquisto");
       router.push("/login");
@@ -28,35 +111,85 @@ const Checkout = () => {
     setIsProcessing(true);
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Token non trovato");
+      let paymentSuccessful = false;
+
+      // Gestione basata sul metodo di pagamento selezionato
+      switch (selectedPayment) {
+        case "credit-card":
+          if (!creditCardData) {
+            alert("Dati carta di credito mancanti");
+            setIsProcessing(false);
+            return;
+          }
+          // Per la carta di credito, procedi con l'ordine normale
+          paymentSuccessful = true;
+          break;
+
+        case "paypal":
+          paymentSuccessful = await handlePayPalPayment();
+          if (!paymentSuccessful) {
+            setIsProcessing(false);
+            return;
+          }
+          break;
+
+        case "apple":
+          paymentSuccessful = await handleApplePayPayment(cart);
+          if (!paymentSuccessful) {
+            setIsProcessing(false);
+            return;
+          }
+          break;
+
+        default:
+          alert("Metodo di pagamento non valido");
+          setIsProcessing(false);
+          return;
       }
 
-      const response = await fetch("http://localhost:3000/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      if (paymentSuccessful) {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("Token non trovato");
+        }
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Errore durante il pagamento");
+        // Prepara i dati dell'ordine includendo il metodo di pagamento
+        const orderPayload = {
+          paymentMethod: selectedPayment,
+          ...(selectedPayment === "credit-card" && {
+            creditCardInfo: {
+              last4: creditCardData.cardNumber.slice(-4),
+              cardholderName: creditCardData.cardholderName,
+            },
+          }),
+        };
+
+        const response = await fetch("http://localhost:3000/api/orders", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(orderPayload),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Errore durante il pagamento");
+        }
+
+        const orderData = await response.json();
+
+        // Svuota il carrello dopo l'acquisto riuscito
+        clearCart();
+
+        // Reindirizza alla pagina dei codici di attivazione con gli ordini
+        router.push(
+          `/cart/purchaseCodes?orders=${encodeURIComponent(
+            JSON.stringify(orderData.orders)
+          )}`
+        );
       }
-
-      const orderData = await response.json();
-
-      // Svuota il carrello dopo l'acquisto riuscito
-      clearCart();
-
-      // Reindirizza alla pagina dei codici di attivazione con gli ordini
-      router.push(
-        `/cart/purchaseCodes?orders=${encodeURIComponent(
-          JSON.stringify(orderData.orders)
-        )}`
-      );
     } catch (error) {
       console.error("Errore durante il pagamento:", error);
       alert(
@@ -123,60 +256,141 @@ const Checkout = () => {
                     </div>
                     <span className="font-medium">Credit Card</span>
                   </div>
-
-                  {/* Credit Card Form */}
+                  {/* Credit Card Form - Only show when credit card is selected */}
                   {selectedPayment === "credit-card" && (
-                    <div className="mt-4 pt-4 border-t border-gray-700">
-                      <form className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-1">
-                            Card Number
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="1234 5678 9012 3456"
-                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                            maxLength={19}
-                          />
-                        </div>
+                    <Formik
+                      initialValues={initialCreditCardValues}
+                      validationSchema={creditCardSchema}
+                      //viene chiamato tramite creditCardFormRef dal bottone PAY
+                      onSubmit={(values) => {
+                        handlePayment(values);
+                      }}
+                      innerRef={creditCardFormRef}
+                    >
+                      {({
+                        values,
+                        setFieldValue,
+                        errors,
+                        touched,
+                        isValid,
+                      }) => {
+                        // Usa useEffect per aggiornare lo stato di validità senza causare re-render
+                        useEffect(() => {
+                          setCreditCardFormValid(isValid);
+                        }, [isValid]);
 
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">
-                              Expiry Date
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="MM/YY"
-                              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                              maxLength={5}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">
-                              CVV
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="123"
-                              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                              maxLength={4}
-                            />
-                          </div>
-                        </div>
+                        return (
+                          <Form className="space-y-4 mt-2">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-1">
+                                Card Number
+                              </label>
+                              <Field
+                                name="cardNumber"
+                                type="text"
+                                placeholder="1234 5678 9012 3456"
+                                className={`w-full px-3 py-2 bg-gray-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                                  errors.cardNumber && touched.cardNumber
+                                    ? "border-red-500"
+                                    : "border-gray-600"
+                                }`}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>
+                                ) => {
+                                  const formatted = formatCardNumber(
+                                    e.target.value
+                                  );
+                                  setFieldValue("cardNumber", formatted);
+                                }}
+                                value={values.cardNumber}
+                                maxLength={19}
+                              />
+                              <ErrorMessage
+                                name="cardNumber"
+                                component="div"
+                                className="text-red-500 text-sm mt-1"
+                              />
+                            </div>
 
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-1">
-                            Cardholder Name
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="John Doe"
-                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                          />
-                        </div>
-                      </form>
-                    </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">
+                                  Expiry Date
+                                </label>
+                                <Field
+                                  name="expiryDate"
+                                  type="text"
+                                  placeholder="MM/YY"
+                                  className={`w-full px-3 py-2 bg-gray-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                                    errors.expiryDate && touched.expiryDate
+                                      ? "border-red-500"
+                                      : "border-gray-600"
+                                  }`}
+                                  onChange={(
+                                    e: React.ChangeEvent<HTMLInputElement>
+                                  ) => {
+                                    const formatted = formatExpiryDate(
+                                      e.target.value
+                                    );
+                                    setFieldValue("expiryDate", formatted);
+                                  }}
+                                  value={values.expiryDate}
+                                  maxLength={5}
+                                />
+                                <ErrorMessage
+                                  name="expiryDate"
+                                  component="div"
+                                  className="text-red-500 text-sm mt-1"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">
+                                  CVV
+                                </label>
+                                <Field
+                                  name="cvv"
+                                  type="text"
+                                  placeholder="123"
+                                  className={`w-full px-3 py-2 bg-gray-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                                    errors.cvv && touched.cvv
+                                      ? "border-red-500"
+                                      : "border-gray-600"
+                                  }`}
+                                  maxLength={4}
+                                />
+                                <ErrorMessage
+                                  name="cvv"
+                                  component="div"
+                                  className="text-red-500 text-sm mt-1"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-1">
+                                Cardholder Name
+                              </label>
+                              <Field
+                                name="cardholderName"
+                                type="text"
+                                placeholder="John Doe"
+                                className={`w-full px-3 py-2 bg-gray-700 border rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                                  errors.cardholderName &&
+                                  touched.cardholderName
+                                    ? "border-red-500"
+                                    : "border-gray-600"
+                                }`}
+                              />
+                              <ErrorMessage
+                                name="cardholderName"
+                                component="div"
+                                className="text-red-500 text-sm mt-1"
+                              />
+                            </div>
+                          </Form>
+                        );
+                      }}
+                    </Formik>
                   )}
                 </CardContent>
               </Card>
@@ -209,11 +423,11 @@ const Checkout = () => {
               {/* PayPal Pay */}
               <Card
                 className={`bg-gray-800 cursor-pointer transition-colors ${
-                  selectedPayment === "PayPal"
+                  selectedPayment === "paypal"
                     ? "border-orange-500 border-2"
                     : "border-gray-700 hover:border-gray-600"
                 }`}
-                onClick={() => setSelectedPayment("PayPal")}
+                onClick={() => setSelectedPayment("paypal")}
               >
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
@@ -291,11 +505,30 @@ const Checkout = () => {
 
                 {/* Payment Button */}
                 <Button
-                  onClick={handlePayment}
-                  disabled={isProcessing}
+                  onClick={() => {
+                    if (
+                      selectedPayment === "credit-card" &&
+                      creditCardFormRef.current
+                    ) {
+                      //Eseguo il submit del mio form della carta di credito cosi da chiamare l'handlePayment dal form
+                      creditCardFormRef.current.submitForm();
+                    } else {
+                      handlePayment();
+                    }
+                  }}
+                  disabled={
+                    isProcessing ||
+                    (selectedPayment === "credit-card" && !creditCardFormValid)
+                  }
                   className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 font-medium py-3 mt-6 cursor-pointer"
                 >
-                  {isProcessing ? "Processing..." : "Pay"}
+                  {isProcessing
+                    ? "Processing..."
+                    : selectedPayment === "credit-card"
+                    ? "Pay with Credit Card"
+                    : selectedPayment === "paypal"
+                    ? "Pay with PayPal"
+                    : "Pay with Apple Pay"}
                 </Button>
               </div>
             </CardContent>
