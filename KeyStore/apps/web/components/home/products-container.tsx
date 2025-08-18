@@ -39,7 +39,7 @@ export default function ProductsContainer() {
               <div className="relative">
                 {/* Game Image with Gradient Overlay */}
                 <div
-                  className={`h-48 bg-gradient-to-br ${game.bgColor} relative overflow-hidden`}
+                  className={`h-48 bg-gradient-to-br relative overflow-hidden`}
                 >
                   <img
                     src={game.imageUrl || "/placeholder.svg"}

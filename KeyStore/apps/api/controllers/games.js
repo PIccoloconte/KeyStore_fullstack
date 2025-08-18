@@ -1,10 +1,26 @@
 import { Game } from "../models/games.js";
 import mongoose from "mongoose";
 
-// Ottieni tutti i giochi
+// Ottieni tutti i giochi con filtri opzionali
 export const getAllGames = async (req, res) => {
   try {
-    const games = await Game.find();
+    const { search, platform } = req.query;
+    let filter = {};
+
+    // Filtro per ricerca testuale (titolo e descrizione)
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        // { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Filtro per piattaforma
+    if (platform) {
+      filter.platform = { $in: [platform] };
+    }
+
+    const games = await Game.find(filter);
     res.status(200).json(games);
   } catch (error) {
     res.status(500).json({ message: error.message });
