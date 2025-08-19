@@ -5,7 +5,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { ChevronRight } from "lucide-react";
-
+import GameCard from "@/components/gameCard";
+import GameCardLoading from "@/components/placeholder/gameCardLoading";
 interface Game {
   _id: string;
   title: string;
@@ -95,20 +96,16 @@ const GamesContent = () => {
 
   if (loading) {
     return (
-      <div className="pt-20 max-w-7xl mx-auto text-white p-6">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-lg">Caricamento giochi...</div>
-        </div>
+      <div className="pt-20 bg-gray-900">
+        <GameCardLoading />;
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="pt-20 max-w-7xl mx-auto text-white p-6">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-lg text-red-500">Errore: {error}</div>
-        </div>
+      <div className="pt-20   text-white p-6 bg-gray-900">
+        <div className="text-lg text-red-500">Errore: {error}</div>
       </div>
     );
   }
@@ -131,49 +128,7 @@ const GamesContent = () => {
           /* Games Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {games.map((game) => (
-              <Link
-                key={game._id}
-                href={`/games/${game._id}`}
-                style={{ textDecoration: "none" }}
-              >
-                <Card className="bg-gray-800 border-gray-700 overflow-hidden cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
-                  <div className="relative">
-                    {/* Game Image with Gradient Overlay */}
-                    <div
-                      className={`h-48 bg-gradient-to-br relative overflow-hidden`}
-                    >
-                      <img
-                        src={game.imageUrl || "/placeholder.svg"}
-                        alt={game.title}
-                        className="w-full h-full object-cover mix-blend-overlay opacity-80"
-                      />
-
-                      {/* Game Title Overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <h3 className="text-white text-xl font-bold text-center px-4">
-                          {game.title.split(" - ")[0]}
-                        </h3>
-                      </div>
-                    </div>
-
-                    {/* Game Info */}
-                    <div className="p-4">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h4 className="text-sm text-gray-300 mb-1 line-clamp-2">
-                            {game.title}
-                          </h4>
-                        </div>
-                        <div className="text-right ml-4">
-                          <span className="text-lg font-bold text-white">
-                            €{game.price}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </Link>
+              <GameCard key={game._id} game={game} />
             ))}
           </div>
         )}
@@ -186,10 +141,8 @@ const Page = () => {
   return (
     <Suspense
       fallback={
-        <div className="pt-20 max-w-7xl mx-auto text-white p-6">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-lg">Caricamento...</div>
-          </div>
+        <div className=" max-w-7xl mx-auto text-white p-6 bg-gray-900">
+          <div className="text-lg">Caricamento...</div>
         </div>
       }
     >

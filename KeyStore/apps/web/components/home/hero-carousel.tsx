@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,9 +40,11 @@ export default function HeroCarousel() {
   }, [isAutoPlaying, games]);
 
   // Handle edge cases
-  if (loading) return <div>Caricamento...</div>;
+  if (loading)
+    return <div className=" h-full bg-gray-700 animate-pulse w-full"></div>;
   if (error) return <div>Errore: {error}</div>;
-  if (!games || games.length === 0) return <div>Nessun gioco disponibile.</div>;
+  if (!games || games.length === 0)
+    return <div className="h-full bg-gray-700 animate-pulse w-full"></div>;
 
   const currentItem = games[currentSlide];
   const slicedGamesToCarousel = games.slice(0, 4);

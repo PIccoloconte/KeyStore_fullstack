@@ -35,108 +35,105 @@ export default function Order() {
   }, []);
 
   if (loading) {
-    return <div className="p-6 text-white">Loading orders...</div>;
+    return (
+      <div>
+        <div className="w-full h-[382px] bg-gray-700 animate-pulse rounded-lg first:mb-4"></div>
+        <div className="w-full h-[382px] bg-gray-700 animate-pulse rounded-lg"></div>
+      </div>
+    );
   }
   if (orders) {
     console.log("Fetched orders:", orders);
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-semibold mb-8">My orders</h1>
+    <div className="flex flex-col-reverse gap-4">
+      {orders.map((order: any) => (
+        <Card key={order._id} className="bg-gray-800 border-gray-700">
+          <CardContent className="p-6">
+            {/* Order Header */}
+            <div className="flex items-start gap-4 mb-6">
+              <img
+                src={order.imageUrl || "/placeholder.svg"}
+                alt={order.title}
+                className="w-20 h-20 rounded object-cover flex-shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-medium text-white mb-2 leading-tight">
+                  {order.title}
+                </h3>
 
-        <div className="flex flex-col-reverse gap-4">
-          {orders.map((order: any) => (
-            <Card key={order._id} className="bg-gray-800 border-gray-700">
-              <CardContent className="p-6">
-                {/* Order Header */}
-                <div className="flex items-start gap-4 mb-6">
-                  <img
-                    src={order.imageUrl || "/placeholder.svg"}
-                    alt={order.title}
-                    className="w-20 h-20 rounded object-cover flex-shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-medium text-white mb-2 leading-tight">
-                      {order.title}
-                    </h3>
-
-                    <div className="text-gray-400 text-sm flex gap-2">
-                      Platform:
-                      {order.gameId.platform.map((el: any) => (
-                        <Badge
-                          variant="outline"
-                          className="border-orange-500 text-white"
-                          key={el}
-                        >
-                          {" " + el}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end gap-2">
+                <div className="text-gray-400 text-sm flex gap-2">
+                  Platform:
+                  {order.gameId.platform.map((el: any) => (
                     <Badge
-                      variant="secondary"
-                      className="bg-green-900/30 text-green-400 border-green-700"
+                      variant="outline"
+                      className="border-orange-500 text-white"
+                      key={el}
                     >
-                      completed
+                      {" " + el}
                     </Badge>
-                    <span className="text-lg font-medium text-white">
-                      {order.pricePaid} €
-                    </span>
-                  </div>
+                  ))}
                 </div>
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <Badge
+                  variant="secondary"
+                  className="bg-green-900/30 text-green-400 border-green-700"
+                >
+                  completed
+                </Badge>
+                <span className="text-lg font-medium text-white">
+                  {order.pricePaid} €
+                </span>
+              </div>
+            </div>
 
-                <Separator className="bg-gray-700 mb-4" />
+            <Separator className="bg-gray-700 mb-4" />
 
-                {/* Order Summary */}
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Tax (0.00%)</span>
-                    <span className="text-gray-300">0 €</span>
-                  </div>
-                  {order.platformFees > 0 && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Platform fees</span>
-                      <span className="text-gray-300">{order.pricePaid} €</span>
-                    </div>
-                  )}
-                  <Separator className="bg-gray-700" />
-                  <div className="flex justify-between font-medium">
-                    <span className="text-white">Total</span>
-                    <span className="text-white text-lg">
-                      {order.pricePaid} €
-                    </span>
-                  </div>
-                  <Separator className="bg-gray-700" />
-                  <div className="flex justify-between font-medium">
-                    <span className="text-white">Key</span>
-                    <span className="text-white text-lg uppercase">
-                      {order.keyAssigned}
-                    </span>
-                  </div>
+            {/* Order Summary */}
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Tax (0.00%)</span>
+                <span className="text-gray-300">0 €</span>
+              </div>
+              {order.platformFees > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Platform fees</span>
+                  <span className="text-gray-300">{order.pricePaid} €</span>
                 </div>
+              )}
+              <Separator className="bg-gray-700" />
+              <div className="flex justify-between font-medium">
+                <span className="text-white">Total</span>
+                <span className="text-white text-lg">{order.pricePaid} €</span>
+              </div>
+              <Separator className="bg-gray-700" />
+              <div className="flex justify-between font-medium">
+                <span className="text-white">Key</span>
+                <span className="text-white text-lg uppercase">
+                  {order.keyAssigned}
+                </span>
+              </div>
+            </div>
 
-                <Separator className="bg-gray-700 mb-4" />
+            <Separator className="bg-gray-700 mb-4" />
 
-                {/* Order Details */}
-                <div className="flex items-center justify-between text-sm text-gray-400">
-                  <div className="flex items-center gap-4">
-                    <span>Order #{order._id}</span>
+            {/* Order Details */}
+            <div className="flex items-center justify-between text-sm text-gray-400">
+              <div className="flex items-center gap-4">
+                <span>Order #{order._id}</span>
 
-                    <span>•</span>
-                    <span>{formatDate(order.createdAt ?? "")}</span>
-                  </div>
-                  <button className="text-gray-400 hover:text-white underline transition-colors">
-                    Download invoice
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+                <span>•</span>
+                <span>{formatDate(order.createdAt ?? "")}</span>
+              </div>
+              <button className="text-gray-400 hover:text-white underline transition-colors">
+                Download invoice
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }
