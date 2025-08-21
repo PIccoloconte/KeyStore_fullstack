@@ -1,29 +1,38 @@
-"use client";
 import { ChevronRight } from "lucide-react";
-import { useGamesApi } from "../../hooks/useGamesApi";
-import { useEffect } from "react";
 import GameCard from "../gameCard";
 import GameCardLoading from "../placeholder/gameCardLoading";
+import axios from "axios";
+import { Game } from "@/Types";
 
-export default function ProductsContainer() {
-  const { games, loading, error, fetchAllGames } = useGamesApi(
-    "http://localhost:3000/api/games"
-    // "http://192.168.205.140:3000/api/games" // hotspot mobile
-    // "http://192.168.2.116:3000/api/games" // wifi portatile
-  );
+async function getGames(): Promise<Game[]> {
+  try {
+    const response = await axios.get<Game[]>(
+      `${process.env.API_URL || "http://localhost:3000"}/api/games`,
+      {
+        timeout: 5000,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-  useEffect(() => {
-    fetchAllGames();
-  }, []);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching games:", error);
+    return [];
+  }
+}
 
-  if (loading)
+export default async function ProductsContainer() {
+  const games = await getGames();
+
+  if (!games || games.length === 0) {
     return (
       <div>
         <GameCardLoading />
       </div>
     );
-  if (error) return <div>Errore: {error}</div>;
-  if (!games || games.length === 0) return <GameCardLoading />;
+  }
 
   return (
     <div className="max-w-7xl mx-auto text-white p-6">

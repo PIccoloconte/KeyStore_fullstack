@@ -1,20 +1,7 @@
-"use client";
 import Link from "next/link";
 import React from "react";
 import { Card } from "@/components/ui/card";
-
-interface Game {
-  _id: string;
-  title: string;
-  description: string;
-  price: string;
-  category: string;
-  platform: string[];
-  imageUrl: string;
-  images: string[];
-  available: boolean;
-  keys: string[];
-}
+import { Game } from "@/Types";
 
 const GameCard = (props: { game: Game }) => {
   const { game } = props;

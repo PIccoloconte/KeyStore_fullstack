@@ -1,8 +1,6 @@
-Da fare quando rientro dalle vacanze
+1. lavorare su cart-preview
 
-1. completare il profile.tsx , c'è ancora un piccolo problema sullo skeleton placeholder dell avatar
-
-2. capire se order.tsx puo diventare solamente un server componet
+2. aggiungere le cache alle chiamate fetch sui server components
 
 3. vedere se è possibile mandare una mail con i codici dopo aver fatto l'acquisto
 
