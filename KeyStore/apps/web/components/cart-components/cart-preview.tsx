@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight, Heart, Trash2 } from "lucide-react";
 import { useAuth } from "@/context";
 import { useRouter } from "next/navigation";
+import CartSummaryLoading from "../placeholder/cartSummuryLoading";
 
 const CartPreview = () => {
   const [loading, setLoading] = useState(false);
@@ -99,27 +100,27 @@ const CartPreview = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="max-w-7xl mx-auto px-6 py-8 scroll-none">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Section */}
         <div className="lg:col-span-2">
           <h2 className="text-2xl font-bold mb-6">Cart</h2>
 
-          {loading ? (
-            <div className="bg-gray-800 rounded-lg p-6 mb-8 text-center">
-              Caricamento carrello...
+          {loading || !cart ? (
+            <div className="bg-gray-700 rounded-lg mb-8 p-6 text-center animate-pulse h-[202px] content-center">
+              Caricamento...
             </div>
           ) : error ? (
             <div className="bg-gray-800 rounded-lg p-6 mb-8 text-center text-red-500">
               {error}
             </div>
           ) : !cart || cart.items.length === 0 ? (
-            <div className="bg-gray-800 rounded-lg p-6 mb-8 text-center">
+            <div className="bg-gray-700 rounded-lg p-6 mb-8 text-center h-[202px] content-center">
               Il tuo carrello è vuoto
             </div>
           ) : (
             cart.items.map((item, index) => (
-              <div key={index} className="bg-gray-800 rounded-lg p-6 mb-8">
+              <div key={index} className="bg-gray-800 rounded-lg p-6 mb-8 ">
                 <div className="flex items-center space-x-4">
                   <Image
                     src={item.imageUrl || "/placeholder.svg"}
@@ -170,15 +171,26 @@ const CartPreview = () => {
           <div className="bg-gray-800 rounded-lg p-6 sticky top-8">
             <h2 className="text-2xl font-bold mb-6">Summary</h2>
 
-            {loading ? (
-              <div className="text-center py-4">Caricamento...</div>
+            {loading || !cart ? (
+              <CartSummaryLoading />
             ) : error ? (
               <div className="text-center py-4 text-red-500">{error}</div>
-            ) : !cart || cart.items.length === 0 ? (
-              <div className="text-center py-4">Il carrello è vuoto</div>
+            ) : cart.items.length === 0 ? (
+              <div className="text-center py-4">
+                Il carrello è vuoto
+                <Link href="/" className="w-full">
+                  <Button
+                    variant="ghost"
+                    className="mt-4 w-full text-gray-400 bg-black hover:bg-gray-700 cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4 mr-2" />
+                    Continue shopping
+                  </Button>
+                </Link>
+              </div>
             ) : (
-              <div className="space-y-4 mb-6">
-                <div className="flex justify-between">
+              <div className="mb-6">
+                <div className="flex justify-between mb-4">
                   <span className="text-gray-300">Total</span>
                   <span>
                     {cart.items
@@ -187,11 +199,6 @@ const CartPreview = () => {
                     €
                   </span>
                 </div>
-                {/* Se hai sconti, puoi calcolarli qui */}
-                {/* <div className="flex justify-between">
-                  <span className="text-gray-300">Sconto</span>
-                  <span className="text-green-500">-0.00 €</span>
-                </div> */}
                 <div className="border-t border-gray-700 pt-4">
                   <div className="flex justify-between text-xl font-bold">
                     <span>Totale</span>
@@ -217,20 +224,18 @@ const CartPreview = () => {
                     <ChevronRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
-
                 <div className="text-center text-gray-400 text-sm mb-4">or</div>
+                <Link href="/" className="w-full">
+                  <Button
+                    variant="ghost"
+                    className="w-full text-gray-400 bg-black hover:bg-gray-700 cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4 mr-2" />
+                    Continue shopping
+                  </Button>
+                </Link>
               </>
             ) : null}
-
-            <Link href="/" className="w-full">
-              <Button
-                variant="ghost"
-                className="w-full text-gray-400 bg-black hover:bg-gray-700 cursor-pointer"
-              >
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Continue shopping
-              </Button>
-            </Link>
           </div>
         </div>
       </div>
