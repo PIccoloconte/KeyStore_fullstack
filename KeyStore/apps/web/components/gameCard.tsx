@@ -3,11 +3,18 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { Game } from "@/Types";
 
-const GameCard = (props: { game: Game }) => {
-  const { game } = props;
+interface GameCardProps {
+  game: Game;
+  className?: string;
+}
+
+const GameCard = ({ game, className }: GameCardProps) => {
+  // const { game } = props;
   return (
     <Link href={`/games/${game._id}`} style={{ textDecoration: "none" }}>
-      <Card className="bg-gray-800 border-gray-700 overflow-hidden cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
+      <Card
+        className={` ${className} bg-gray-800 border-gray-700 overflow-hidden cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20`}
+      >
         <div className="relative">
           {/* Game Image with Gradient Overlay */}
           <div className={`h-48 bg-gradient-to-br relative overflow-hidden`}>

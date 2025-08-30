@@ -68,7 +68,7 @@ export default async function Page({ searchParams }: PageProps) {
   const games = await getGames(resolvedSearchParams);
 
   return (
-    <div className="pt-20 bg-gray-900">
+    <div className="mt-[104px] md:mt-20 bg-gray-900">
       <div className="max-w-7xl mx-auto text-white p-6">
         <div className="flex items-center gap-2 mb-8">
           <h1 className="text-2xl font-bold">
@@ -84,7 +84,7 @@ export default async function Page({ searchParams }: PageProps) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {games.map((game) => (
-              <GameCard key={game._id} game={game} />
+              <GameCard key={game._id} game={game} className="" />
             ))}
           </div>
         )}

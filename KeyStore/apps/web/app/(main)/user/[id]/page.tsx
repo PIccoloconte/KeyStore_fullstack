@@ -6,7 +6,7 @@ import Order from "@/components/user/order";
 
 export default async function User({ params }: any) {
   return (
-    <div className="pt-20">
+    <div className="mt-[104px] md:mt-20">
       <div id={params.id}>
         <Profile></Profile>
         <div className="min-h-screen bg-gray-900 text-white p-6">

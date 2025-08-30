@@ -3,8 +3,8 @@ import { Cloud, Shield, MessageCircle, Star } from "lucide-react";
 export default function SecurityBanner() {
   return (
     <div className="bg-[#101010] text-white py-4 px-6">
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-5">
-        <div className="flex items-center flex-col lg:flex-row  gap-5">
+      <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-5">
+        <div className="flex items-start w-auto flex-col lg:flex-row  gap-5">
           {/* Super fast */}
           <div className="flex items-center space-x-3">
             <Cloud className="w-6 h-6 text-orange-500" />

@@ -98,6 +98,7 @@ export default function HeroCarouselClient({ games }: Props) {
           </div>
         </div>
 
+        {/* Previous slide button */}
         <button
           onClick={prevSlide}
           className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center text-white transition-colors z-10"
@@ -105,7 +106,7 @@ export default function HeroCarouselClient({ games }: Props) {
         >
           <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
-
+        {/* Next slide button */}
         <button
           onClick={nextSlide}
           className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center text-white transition-colors z-10"
@@ -114,7 +115,7 @@ export default function HeroCarouselClient({ games }: Props) {
           <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
       </div>
-
+      {/** Dots navigation */}
       <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
         {games.map((_, index) => (
           <button
@@ -126,10 +127,6 @@ export default function HeroCarouselClient({ games }: Props) {
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
-      </div>
-
-      <div className="absolute top-4 right-4 sm:hidden bg-black/30 text-white px-2 py-1 rounded text-sm z-10">
-        {currentSlide + 1} / {games.length}
       </div>
     </>
   );

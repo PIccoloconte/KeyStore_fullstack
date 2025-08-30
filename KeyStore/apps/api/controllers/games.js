@@ -79,7 +79,12 @@ export const updateGame = async (req, res) => {
     // Gestione custom per platform e keys
     if (Array.isArray(req.body.platform)) {
       req.body.platform.forEach((p) => {
-        if (!game.platform.includes(p)) {
+        //delete if is already present
+        if (game.platform.includes(p)) {
+          game.platform = game.platform.filter((item) => item !== p);
+        }
+        //push if not already present
+        else if (!game.platform.includes(p)) {
           game.platform.push(p);
         }
       });

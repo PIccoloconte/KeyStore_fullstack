@@ -121,7 +121,7 @@ const CartPreview = () => {
           ) : (
             cart.items.map((item, index) => (
               <div key={index} className="bg-gray-800 rounded-lg p-6 mb-8 ">
-                <div className="flex items-center space-x-4">
+                <div className="flex flex-col md:flex-row items-center space-x-4">
                   <Image
                     src={item.imageUrl || "/placeholder.svg"}
                     alt={item.title}

@@ -21,7 +21,7 @@ export default function ProductClient({ game }: { game: Game }) {
   const productInCart = isInCart(game._id);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <div className="min-h-screen bg-gray-50 mt-[104px] md:mt-20">
       <div className="max-w-7xl mx-auto p-6">
         <div className="grid lg:grid-cols-2 gap-8 mb-12">
           {/* Left - Game Image */}
