@@ -21,6 +21,7 @@ const CartPreview = () => {
     }
   }, [isLoggedIn, cart]);
 
+  // function to fetch data cart
   const fetchCart = async () => {
     try {
       setLoading(true);
@@ -43,6 +44,7 @@ const CartPreview = () => {
       }
 
       const cartData = await response.json();
+      //check if the product is already in the cart or if user is authenticated
       updateCart(cartData);
       setLoading(false);
     } catch (err) {
@@ -52,7 +54,7 @@ const CartPreview = () => {
       setLoading(false);
     }
   };
-
+  //Delete single game from cart
   const deleteGameFromCart = async (gameId: string) => {
     try {
       setDeletingItems((prev) => [...prev, gameId]);
@@ -75,7 +77,7 @@ const CartPreview = () => {
         throw new Error(`Errore ${response.status}: ${response.statusText}`);
       }
 
-      // Ora il backend restituisce il carrello già popolato con i dati completi
+      // update cart state after deletion
       const updatedCart = await response.json();
       updateCart(updatedCart);
     } catch (err) {
@@ -88,15 +90,15 @@ const CartPreview = () => {
       setDeletingItems((prev) => prev.filter((id) => id !== gameId));
     }
   };
-  //gestione del click sul bottone "Next" per il checkout
+
+  //click management for checkout
   const handleNextClick = (e: React.MouseEvent) => {
     if (!isLoggedIn) {
-      e.preventDefault(); // Previene la navigazione predefinita del Link
-      // Salva l'URL di destinazione per reindirizzare dopo il login
+      e.preventDefault();
+      // Save url after login
       localStorage.setItem("redirectAfterLogin", "/cart/checkout");
       router.push("/login"); // Reindirizza alla pagina di login
     }
-    // Se l'utente è loggato, il Link funzionerà normalmente
   };
 
   return (
@@ -119,6 +121,7 @@ const CartPreview = () => {
               Il tuo carrello è vuoto
             </div>
           ) : (
+            // Display cart items
             cart.items.map((item, index) => (
               <div key={index} className="bg-gray-800 rounded-lg p-6 mb-8 ">
                 <div className="flex flex-col md:flex-row items-center space-x-4">
@@ -212,7 +215,7 @@ const CartPreview = () => {
                 </div>
               </div>
             )}
-
+            {/* Go to checkout or go home button */}
             {cart && cart.items.length > 0 ? (
               <>
                 <Link href="/cart/checkout" className="w-full">
