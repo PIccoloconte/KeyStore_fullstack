@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-import { User, GameDetails, CartItem, Cart, AuthContextType } from "./Types";
+import { User, Cart, AuthContextType } from "./Types";
 
 const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
@@ -13,7 +13,6 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {},
   addToCart: async () => null,
   updateCart: () => {},
-  mergeCartsAfterLogin: async () => {},
   isInCart: () => false,
   clearCart: () => {},
 });
@@ -61,17 +60,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.error("Errore nel recupero del carrello:", error);
         }
       } else {
-        // load cart from localStorage for guest users
-        const guestCart = localStorage.getItem("guestCart");
-        if (guestCart) {
-          setCart(JSON.parse(guestCart));
-        } else {
-          // initialize empty cart for guest users
-          setCart({
-            userId: "guest",
-            items: [],
-          });
-        }
+        // if !isLoggedIn add an empty cart
+        setCart({
+          userId: "guest",
+          items: [],
+        });
       }
     };
 
@@ -95,9 +88,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("user", JSON.stringify(user));
     setIsLoggedIn(true);
     setUser(user);
-
-    // After login, check if there's a guest cart to merge
-    mergeCartsAfterLogin();
   };
 
   const logout = () => {
@@ -106,68 +96,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoggedIn(false);
     setUser(null);
 
-    // Load cart from localStorage for guest users
-    const guestCart = localStorage.getItem("guestCart");
-    if (guestCart) {
-      setCart(JSON.parse(guestCart));
-    } else {
-      setCart({
-        userId: "guest",
-        items: [],
-      });
-    }
-
     router.push("/");
-  };
-
-  // Function to merge carts after login
-  const mergeCartsAfterLogin = async () => {
-    const guestCart = localStorage.getItem("guestCart");
-    if (!guestCart) return;
-
-    const parsedGuestCart: Cart = JSON.parse(guestCart);
-    if (!parsedGuestCart.items || parsedGuestCart.items.length === 0) return;
-
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      // For each item in the guest cart, add it to the user's cart
-      for (const item of parsedGuestCart.items) {
-        await fetch(`http://localhost:3000/api/cart`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            gameId: item.gameId._id,
-            price: item.price,
-            title: item.title,
-            imageUrl: item.imageUrl,
-            platform: item.platform,
-            quantity: item.quantity,
-          }),
-        });
-      }
-
-      // Load the user's cart after merging
-      const response = await fetch(`http://localhost:3000/api/cart`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const updatedCart = await response.json();
-        setCart(updatedCart);
-
-        // Delete guest cart after merging
-        localStorage.removeItem("guestCart");
-      }
-    } catch (error) {
-      console.error("Errore durante il merge dei carrelli:", error);
-    }
   };
 
   // Add products to cart (supports both logged in and guest users)
@@ -221,11 +150,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Function to update the cart state
   const updateCart = (newCart: Cart | null) => {
     setCart(newCart);
-
-    // If the user is not logged in, update localStorage as well
-    if (!isLoggedIn && newCart) {
-      localStorage.setItem("guestCart", JSON.stringify(newCart));
-    }
   };
 
   // Function to check if a product is already in the cart
@@ -235,11 +159,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return cart.items.some((item) => item.gameId._id === gameId);
   };
 
-  // Funzione per svuotare il carrello dopo il checkout
+  // Function to clear the cart after checkout
   const clearCart = () => {
     setCart(null);
-    // Rimuove anche il carrello guest dal localStorage se presente
-    localStorage.removeItem("guestCart");
   };
 
   return (
@@ -253,7 +175,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         logout,
         addToCart,
         updateCart,
-        mergeCartsAfterLogin,
         isInCart,
         clearCart,
       }}

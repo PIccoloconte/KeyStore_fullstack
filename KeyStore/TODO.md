@@ -1,3 +1,5 @@
+0. continuare a lavorare su context e dopo spostarsi su cart-preview
+
 1. controllare se posso accedere alle varie pagine da non loggato , come il checkout e il profilo
 
 2. aggiungere le cache alle chiamate fetch sui server components

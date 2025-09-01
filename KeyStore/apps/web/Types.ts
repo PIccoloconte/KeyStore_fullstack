@@ -52,7 +52,6 @@ export type AuthContextType = {
     platform?: string[]
   ) => Promise<Cart | null>;
   updateCart: (newCart: Cart | null) => void;
-  mergeCartsAfterLogin: () => Promise<void>;
   isInCart: (gameId: string) => boolean;
   clearCart: () => void;
 };
