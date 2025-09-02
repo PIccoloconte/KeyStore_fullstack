@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { ChevronLeft, ChevronRight, Heart, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { useAuth } from "@/context";
 import { useRouter } from "next/navigation";
 import CartSummaryLoading from "../placeholder/cartSummuryLoading";
@@ -28,7 +28,7 @@ const CartPreview = () => {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        setError("Non sei autenticato");
+        setError("user not authenticated");
         setLoading(false);
         return;
       }
@@ -48,20 +48,19 @@ const CartPreview = () => {
       updateCart(cartData);
       setLoading(false);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Errore nel recupero del carrello"
-      );
+      setError(err instanceof Error ? err.message : "Error fetching cart");
       setLoading(false);
     }
   };
   //Delete single game from cart
   const deleteGameFromCart = async (gameId: string) => {
     try {
+      //Visible feedback to user when deleting item to cart
       setDeletingItems((prev) => [...prev, gameId]);
       const token = localStorage.getItem("token");
 
       if (!token) {
-        setError("Non sei autenticato");
+        setError("user not authenticated");
         setDeletingItems((prev) => prev.filter((id) => id !== gameId));
         return;
       }
@@ -97,7 +96,7 @@ const CartPreview = () => {
       e.preventDefault();
       // Save url after login
       localStorage.setItem("redirectAfterLogin", "/cart/checkout");
-      router.push("/login"); // Reindirizza alla pagina di login
+      router.push("/login"); // redirect to login
     }
   };
 
@@ -110,7 +109,7 @@ const CartPreview = () => {
 
           {loading || !cart ? (
             <div className="bg-gray-700 rounded-lg mb-8 p-6 text-center animate-pulse h-[202px] content-center">
-              Caricamento...
+              Loading...
             </div>
           ) : error ? (
             <div className="bg-gray-800 rounded-lg p-6 mb-8 text-center text-red-500">
@@ -118,7 +117,7 @@ const CartPreview = () => {
             </div>
           ) : !cart || cart.items.length === 0 ? (
             <div className="bg-gray-700 rounded-lg p-6 mb-8 text-center h-[202px] content-center">
-              Il tuo carrello è vuoto
+              Cart is empty
             </div>
           ) : (
             // Display cart items
@@ -158,7 +157,7 @@ const CartPreview = () => {
                     disabled={deletingItems.includes(item.gameId._id)}
                   >
                     {deletingItems.includes(item.gameId._id) ? (
-                      "Rimozione..."
+                      "Removing..." //visible feedback to user
                     ) : (
                       <Trash2 className="w-4 h-4" />
                     )}
@@ -180,7 +179,7 @@ const CartPreview = () => {
               <div className="text-center py-4 text-red-500">{error}</div>
             ) : cart.items.length === 0 ? (
               <div className="text-center py-4">
-                Il carrello è vuoto
+                Cart is empty
                 <Link href="/" className="w-full">
                   <Button
                     variant="ghost"

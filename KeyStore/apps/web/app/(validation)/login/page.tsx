@@ -8,7 +8,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-// import { useRouter } from "next/navigation";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -18,21 +17,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-// Tipi TypeScript
 interface LoginFormValues {
   username: string;
   password: string;
 }
 
-// Schema di validazione con Yup
+// Validation schema
 const loginSchema = Yup.object({
   username: Yup.string()
-    .min(3, "Username deve contenere almeno 3 caratteri")
-    .required("Username è obbligatorio"),
+    .min(3, "Username must contain at least 3 characters")
+    .required("Username is required"),
 
   password: Yup.string()
-    .min(6, "Password deve contenere almeno 6 caratteri")
-    .required("Password è obbligatoria"),
+    .min(8, "Password must contain at least 8 characters")
+    .required("Password is required"),
 });
 
 const LoginPage: React.FC = () => {
@@ -49,22 +47,7 @@ const LoginPage: React.FC = () => {
     password: "",
   };
 
-  // const handleLogin = async (username: string, password: string) => {
-  //   const res = await fetch("/api/login", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({ username, password }),
-  //   });
-  //   const data = await res.json();
-  //   if (data.status === "ok" && data.data) {
-  //     login(data.data); // Salva il token nel context e localStorage
-  //     // Puoi anche reindirizzare l’utente dove vuoi
-  //     // router.push("/");
-  //   } else {
-  //     // Gestisci errore login
-  //   }
-  // };
-
+  // Submit the form
   const handleSubmit = async (values: LoginFormValues) => {
     try {
       setSubmitStatus(null);
@@ -87,9 +70,10 @@ const LoginPage: React.FC = () => {
 
       if (res.ok && data.status === "ok" && data.data) {
         const { _id, username, createdAt } = data.user;
-        login(data.data, { _id, username, createdAt }); // Salva il token e l'utente nel context e localStorage
+        login(data.data, { _id, username, createdAt }); // Save the token and user in context and localStorage
         setSubmitStatus("success");
-        // controllo se devo reidirizzare l'utente sulla carta dopo aver fatto il login
+
+        // Check if I need to redirect the user to the cart after logging in
         const redirectUrl = localStorage.getItem("redirectAfterLogin");
         if (redirectUrl) {
           localStorage.removeItem("redirectAfterLogin");
@@ -111,10 +95,10 @@ const LoginPage: React.FC = () => {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
             <LogIn className="w-6 h-6" />
-            Accedi
+            Log In
           </CardTitle>
           <CardDescription className="text-center">
-            Inserisci le tue credenziali per accedere al tuo account
+            Insert your credentials to access your account
           </CardDescription>
         </CardHeader>
 
@@ -206,7 +190,7 @@ const LoginPage: React.FC = () => {
                     href="/forgot-password"
                     className="text-sm text-blue-600 hover:underline"
                   >
-                    Password dimenticata?
+                    Forgot password?
                   </a>
                 </div>
 
@@ -214,7 +198,7 @@ const LoginPage: React.FC = () => {
                 {submitStatus === "success" && (
                   <Alert className="border-green-500 bg-green-50">
                     <AlertDescription className="text-green-700">
-                      Login effettuato con successo!
+                      Login successful!
                     </AlertDescription>
                   </Alert>
                 )}
@@ -222,7 +206,7 @@ const LoginPage: React.FC = () => {
                 {submitStatus === "error" && (
                   <Alert className="border-red-500 bg-red-50">
                     <AlertDescription className="text-red-700">
-                      Credenziali non valide. Riprova.
+                      Invalid credentials. Please try again.
                     </AlertDescription>
                   </Alert>
                 )}
@@ -246,7 +230,7 @@ const LoginPage: React.FC = () => {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">oppure</span>
+                <span className="px-2 bg-white text-gray-500">or</span>
               </div>
             </div>
           </div>
@@ -254,9 +238,9 @@ const LoginPage: React.FC = () => {
           {/* Registration Link */}
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Non hai ancora un account?{" "}
+              Don't have an account?{" "}
               <a href="/register" className="text-blue-600 hover:underline">
-                Registrati qui
+                Register here
               </a>
             </p>
           </div>
@@ -264,7 +248,7 @@ const LoginPage: React.FC = () => {
           {/* Demo Info */}
           <div className="mt-4 p-3 bg-gray-100 rounded-lg">
             <p className="text-xs text-gray-600 text-center">
-              <strong>Demo:</strong> Usa "admin" come username e "password" come
+              <strong>Demo:</strong> Use "admin" as username and "password" as
               password
             </p>
           </div>

@@ -1,7 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
 import { User, Cart, AuthContextType } from "./Types";
 
 const AuthContext = createContext<AuthContextType>({
@@ -40,7 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => window.removeEventListener("storage", handler);
   }, []);
 
-  //if user is logged in fetch cart, if not load from localStorage
+  //if user is logged in fetch cart, if not replace with empty cart
   useEffect(() => {
     const fetchCart = async () => {
       if (isLoggedIn && user) {

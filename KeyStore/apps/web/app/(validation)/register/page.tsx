@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 
-// Tipi TypeScript
 interface RegistrationFormValues {
   username: string;
   email: string;
@@ -27,29 +26,29 @@ interface RegistrationFormValues {
 // Schema di validazione con Yup
 const registrationSchema = Yup.object({
   username: Yup.string()
-    .min(3, "Username deve contenere almeno 3 caratteri")
-    .max(20, "Username non può superare 20 caratteri")
+    .min(3, "Username must contain at least 3 characters")
+    .max(20, "Username must not exceed 20 characters")
     .matches(
       /^[a-zA-Z0-9_]+$/,
-      "Username può contenere solo lettere, numeri e underscore"
+      "Username can only contain letters, numbers, and underscores"
     )
-    .required("Username è obbligatorio"),
+    .required("Username is required"),
 
   email: Yup.string()
-    .email("Formato email non valido")
-    .required("Email è obbligatoria"),
+    .email("Invalid email format")
+    .required("Email is required"),
 
   password: Yup.string()
-    .min(8, "Password deve contenere almeno 8 caratteri")
+    .min(8, "Password must contain at least 8 characters")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      "Password deve contenere almeno una lettera minuscola, una maiuscola e un numero"
+      "Password must contain at least one lowercase letter, one uppercase letter, and one number"
     )
-    .required("Password è obbligatoria"),
+    .required("Password is required"),
 
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password")], "Le password non corrispondono")
-    .required("Conferma password è obbligatoria"),
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Confirm password is required"),
 });
 
 const RegisterPage: React.FC = () => {
@@ -66,18 +65,7 @@ const RegisterPage: React.FC = () => {
     confirmPassword: "",
   };
 
-  // const handleSubmit = async (values: RegistrationFormValues) => {
-  //   try {
-  //     setSubmitStatus(null);
-  //     // Qui puoi fare la chiamata reale al backend, oppure lasciare la simulazione:
-  //     console.log("Dati di registrazione:", values);
-  //     await new Promise((resolve) => setTimeout(resolve, 1000));
-  //     setSubmitStatus("success");
-  //   } catch (error) {
-  //     setSubmitStatus("error");
-  //   }
-  // };
-
+  // Submit the registration form
   const handleSubmit = async (values: RegistrationFormValues) => {
     try {
       setSubmitStatus(null);
@@ -106,10 +94,10 @@ const RegisterPage: React.FC = () => {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
             <UserPlus className="w-6 h-6" />
-            Registrazione
+            Registration
           </CardTitle>
           <CardDescription className="text-center">
-            Crea il tuo account compilando i campi sottostanti
+            Create your account by filling in the fields below
           </CardDescription>
         </CardHeader>
 
@@ -126,7 +114,6 @@ const RegisterPage: React.FC = () => {
               handleSubmit: formikHandleSubmit,
             }) => (
               <form className="space-y-4" onSubmit={formikHandleSubmit}>
-                {/* React form wrapper */}
                 {/* Username Field */}
                 <div className="space-y-2">
                   <Label htmlFor="username">Username</Label>
@@ -245,7 +232,7 @@ const RegisterPage: React.FC = () => {
                 {submitStatus === "success" && (
                   <Alert className="border-green-500 bg-green-50">
                     <AlertDescription className="text-green-700">
-                      Registrazione completata con successo!
+                      Registration completed successfully!
                     </AlertDescription>
                   </Alert>
                 )}
@@ -253,8 +240,7 @@ const RegisterPage: React.FC = () => {
                 {submitStatus === "error" && (
                   <Alert className="border-red-500 bg-red-50">
                     <AlertDescription className="text-red-700">
-                      Si è verificato un errore durante la registrazione.
-                      Riprova.
+                      An error occurred during registration. Please try again.
                     </AlertDescription>
                   </Alert>
                 )}
@@ -274,9 +260,9 @@ const RegisterPage: React.FC = () => {
           {/* Login Link */}
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
-              Hai già un account?{" "}
+              Already have an account?{" "}
               <Link href="/login" className="text-blue-600 hover:underline">
-                Accedi qui
+                Log in here
               </Link>
             </p>
           </div>
