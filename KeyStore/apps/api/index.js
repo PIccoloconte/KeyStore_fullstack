@@ -3,6 +3,7 @@ import gameRoutes from "./routes/games.js";
 import authRoutes from "./routes/auth.js";
 import orderRoutes from "./routes/orders.js";
 import cartRoutes from "./routes/cart.js";
+import paymentRoutes from "./routes/paypal.js";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -19,6 +20,7 @@ app.use("/api/games", gameRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", authenticate, orderRoutes);
 app.use("/api/cart", authenticate, cartRoutes);
+app.use("/api/paypal", authenticate, paymentRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Home Page");

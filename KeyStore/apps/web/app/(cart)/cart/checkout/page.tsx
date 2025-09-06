@@ -1,14 +1,14 @@
 "use client";
-//tornare qua se qualcosa va storto
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Edit, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context";
-import { handlePayPalPayment, handleApplePayPayment } from "@/utils"; // Importa la funzione PayPal dal file utils
+import { handlePayPalPayment, handleApplePayPayment } from "@/utils";
 import CreditCard from "@/components/checkout/credit-card";
 import BillingAddress from "@/components/checkout/address";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const Checkout = () => {
   const [selectedPayment, setSelectedPayment] = useState("credit-card");
@@ -18,6 +18,11 @@ const Checkout = () => {
   const [creditCardFormValid, setCreditCardFormValid] = useState(false);
   const { cart, isLoggedIn, clearCart } = useAuth();
   const router = useRouter();
+
+  const initialPayPalOptions = {
+    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "",
+    currency: "EUR", // Aggiungi questa riga per far in modod che PayPal usi Euro
+  };
 
   //gestione pagamento
   const handlePayment = async (creditCardData?: any) => {
@@ -132,6 +137,50 @@ const Checkout = () => {
     // add logic to save in local storage or in DB
   };
 
+  //
+  //
+  ///
+  //
+  //
+  ///
+  ///
+  //
+  ///
+  //Non trova l'orderId capire come mai
+  const onCreateOrder = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Token non trovato");
+    }
+
+    try {
+      const response = await fetch("http://localhost:3000/api/paypal", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      return data.orderId;
+    } catch (error) {
+      console.error("Error creating PayPal order:", error);
+      throw error;
+    }
+  };
+
+  const onApprove = async () => {
+    try {
+    } catch (error) {
+      console.log("Error verify paypal order:", error);
+      //aggiungere il redirect
+    }
+  };
+  const onError = (err: any) => {
+    console.error("PayPal Checkout onError", err);
+    //aggiungere il redirect
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8">
@@ -183,6 +232,7 @@ const Checkout = () => {
               </Card>
 
               {/* PayPal Pay */}
+
               <Card
                 className={`bg-gray-800 cursor-pointer transition-colors ${
                   selectedPayment === "paypal"
@@ -198,6 +248,18 @@ const Checkout = () => {
                     </div>
                     <span className="font-medium">PayPal</span>
                   </div>
+                  {selectedPayment === "paypal" && (
+                    <div className="mt-4">
+                      <PayPalScriptProvider options={initialPayPalOptions}>
+                        <PayPalButtons
+                          createOrder={onCreateOrder}
+                          onApprove={onApprove}
+                          onError={onError}
+                          fundingSource="paypal"
+                        ></PayPalButtons>
+                      </PayPalScriptProvider>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>

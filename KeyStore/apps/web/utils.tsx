@@ -8,14 +8,20 @@ export const formatDate = (isoDate: string): string => {
 
 // Gestione del pagamento PayPal
 export const handlePayPalPayment = async () => {
+  const token = localStorage.getItem("token");
   try {
-    // Simula il redirect a PayPal
-    window.open("https://www.paypal.com/checkoutnow", "_blank");
-    // In un'applicazione reale, qui implementeresti l'integrazione PayPal SDK
-    return true;
+    const response = await fetch("http://localhost:3000/api/paypal", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    return data.orderId;
   } catch (error) {
-    console.error("Errore PayPal:", error);
-    return false;
+    console.error("Error creating PayPal order:", error);
+    throw error;
   }
 };
 
