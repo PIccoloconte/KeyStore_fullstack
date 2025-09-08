@@ -1,4 +1,5 @@
 1. adesso che funziona paypal, va creato che una volta che avrò il successo del pagamento mi reindirizzera verso la pagina con i codici
+   CAPIRE COME MAI HO UNA DISCREPANZA CON IL VIDEO AL MINUTO 18:50 , NOM VEDO I DATI IN CONSOLE DI paymentData
    Eliminare apllePay
    sistemare il bottone di pagamento , se ho aperto quello di paypal,npn potrò premere quello della carta di credito
 

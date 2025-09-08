@@ -5,65 +5,46 @@ import { Edit, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context";
-import { handlePayPalPayment, handleApplePayPayment } from "@/utils";
 import CreditCard from "@/components/checkout/credit-card";
 import BillingAddress from "@/components/checkout/address";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import Paypal from "@/components/checkout/paypal";
 
 const Checkout = () => {
   const [selectedPayment, setSelectedPayment] = useState("credit-card");
   const [isProcessing, setIsProcessing] = useState(false);
-  //creditCardFormRef serve per accedere a formik da fuori il componente
+  //creditCardFormRef serves to access formik from outside the component
   const creditCardFormRef = useRef<any>(null);
   const [creditCardFormValid, setCreditCardFormValid] = useState(false);
   const { cart, isLoggedIn, clearCart } = useAuth();
   const router = useRouter();
 
-  const initialPayPalOptions = {
-    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "",
-    currency: "EUR", // Aggiungi questa riga per far in modod che PayPal usi Euro
-  };
-
-  //gestione pagamento
+  //payment handler
   const handlePayment = async (creditCardData?: any) => {
-    if (!isLoggedIn) {
-      alert("È necessario effettuare l'accesso per completare l'acquisto");
-      router.push("/login");
-      return;
-    }
-
-    if (!cart || cart.items.length === 0) {
-      alert("Il carrello è vuoto");
-      return;
-    }
-
     setIsProcessing(true);
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Token non trovato");
+    }
 
     try {
       let paymentSuccessful = false;
 
-      // Gestione basata sul metodo di pagamento selezionato
+      // Payment handling based on the selected payment method
       switch (selectedPayment) {
         case "credit-card":
           if (!creditCardData) {
-            alert("Dati carta di credito mancanti");
+            alert("Missing credit card data");
             setIsProcessing(false);
             return;
           }
-          // Per la carta di credito, procedi con l'ordine normale
+          // For credit card, proceed with the normal order
           paymentSuccessful = true;
           break;
 
         case "paypal":
-          paymentSuccessful = await handlePayPalPayment();
-          if (!paymentSuccessful) {
-            setIsProcessing(false);
-            return;
-          }
-          break;
-
-        case "apple":
-          paymentSuccessful = await handleApplePayPayment(cart);
+          // For PayPal, the payment logic is handled separately
+          paymentSuccessful = true;
           if (!paymentSuccessful) {
             setIsProcessing(false);
             return;
@@ -77,29 +58,12 @@ const Checkout = () => {
       }
 
       if (paymentSuccessful) {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("Token non trovato");
-        }
-
-        // Prepara i dati dell'ordine includendo il metodo di pagamento
-        const orderPayload = {
-          paymentMethod: selectedPayment,
-          ...(selectedPayment === "credit-card" && {
-            creditCardInfo: {
-              last4: creditCardData.cardNumber.slice(-4),
-              cardholderName: creditCardData.cardholderName,
-            },
-          }),
-        };
-
         const response = await fetch("http://localhost:3000/api/orders", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(orderPayload),
         });
 
         if (!response.ok) {
@@ -109,10 +73,10 @@ const Checkout = () => {
 
         const orderData = await response.json();
 
-        // Svuota il carrello dopo l'acquisto riuscito
+        // Clear the cart after successful purchase
         clearCart();
 
-        // Reindirizza alla pagina dei codici di attivazione con gli ordini
+        // Redirect to the activation codes page with the orders
         router.push(
           `/cart/purchaseCodes?orders=${encodeURIComponent(
             JSON.stringify(orderData.orders)
@@ -131,54 +95,10 @@ const Checkout = () => {
     }
   };
 
-  // Gestione salvataggio indirizzo di fatturazione
+  // Billing address save handler
   const handleBillingAddressSave = (addressData: any) => {
     console.log("Saving billing address:", addressData);
-    // add logic to save in local storage or in DB
-  };
-
-  //
-  //
-  ///
-  //
-  //
-  ///
-  ///
-  //
-  ///
-  //Non trova l'orderId capire come mai
-  const onCreateOrder = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("Token non trovato");
-    }
-
-    try {
-      const response = await fetch("http://localhost:3000/api/paypal", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-      return data.orderId;
-    } catch (error) {
-      console.error("Error creating PayPal order:", error);
-      throw error;
-    }
-  };
-
-  const onApprove = async () => {
-    try {
-    } catch (error) {
-      console.log("Error verify paypal order:", error);
-      //aggiungere il redirect
-    }
-  };
-  const onError = (err: any) => {
-    console.error("PayPal Checkout onError", err);
-    //aggiungere il redirect
+    //TODO: add logic to save in local storage or in DB
   };
 
   return (
@@ -206,62 +126,13 @@ const Checkout = () => {
                 creditCardFormRef={creditCardFormRef}
               />
 
-              {/* Apple Pay */}
-              <Card
-                className={`bg-gray-800 border-gray-700 cursor-pointer transition-colors ${
-                  selectedPayment === "apple"
-                    ? "border-orange-500"
-                    : "hover:border-gray-600"
-                }`}
-                onClick={() => setSelectedPayment("apple")}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-black rounded flex items-center justify-center">
-                      <svg
-                        className="w-5 h-5 text-white"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-                      </svg>
-                    </div>
-                    <span className="font-medium">Apple Pay</span>
-                  </div>
-                </CardContent>
-              </Card>
-
               {/* PayPal Pay */}
 
-              <Card
-                className={`bg-gray-800 cursor-pointer transition-colors ${
-                  selectedPayment === "paypal"
-                    ? "border-orange-500 border-2"
-                    : "border-gray-700 hover:border-gray-600"
-                }`}
-                onClick={() => setSelectedPayment("paypal")}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">PP</span>
-                    </div>
-                    <span className="font-medium">PayPal</span>
-                  </div>
-                  {selectedPayment === "paypal" && (
-                    <div className="mt-4">
-                      <PayPalScriptProvider options={initialPayPalOptions}>
-                        <PayPalButtons
-                          createOrder={onCreateOrder}
-                          onApprove={onApprove}
-                          onError={onError}
-                          fundingSource="paypal"
-                        ></PayPalButtons>
-                      </PayPalScriptProvider>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <Paypal
+                selectedPayment={selectedPayment}
+                setSelectedPayment={setSelectedPayment}
+                handlePayment={handlePayment}
+              />
             </div>
           </div>
         </div>
@@ -334,7 +205,7 @@ const Checkout = () => {
                       selectedPayment === "credit-card" &&
                       creditCardFormRef.current
                     ) {
-                      //Eseguo il submit del mio form della carta di credito cosi da chiamare l'handlePayment dal form
+                      //When I click on the "Pay with Credit Card" button, I trigger the onSubmit inside credit-card.tsx which calls handlePayment
                       creditCardFormRef.current.submitForm();
                     } else {
                       handlePayment();
@@ -342,17 +213,13 @@ const Checkout = () => {
                   }}
                   disabled={
                     isProcessing ||
-                    (selectedPayment === "credit-card" && !creditCardFormValid)
+                    (selectedPayment === "credit-card" &&
+                      !creditCardFormValid) ||
+                    selectedPayment === "paypal"
                   }
                   className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 font-medium py-3 mt-6 cursor-pointer"
                 >
-                  {isProcessing
-                    ? "Processing..."
-                    : selectedPayment === "credit-card"
-                    ? "Pay with Credit Card"
-                    : selectedPayment === "paypal"
-                    ? "Pay with PayPal"
-                    : "Pay with Apple Pay"}
+                  {isProcessing ? "Processing..." : "Pay with Credit Card"}
                 </Button>
               </div>
             </CardContent>

@@ -83,12 +83,47 @@ export const createPayPalPayment = async (req, res) => {
         ? JSON.parse(response.body)
         : response.body;
 
-    const orderId = responseData.id;
-    console.log("Order ID:", orderId);
+    const orderID = responseData.id;
+    console.log("Order ID:", orderID);
 
     return res
       .status(200)
-      .json({ orderId, message: "PayPal payment created successfully" });
+      .json({ orderID, message: "PayPal payment created successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const capturePayment = async (req, res) => {
+  try {
+    const accessToken = await getAccessToken();
+    const { paymentId } = req.params;
+    const response = await got.post(
+      `https://api-m.sandbox.paypal.com/v2/checkout/orders/${paymentId}/capture`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        json: {
+          responseType: "json",
+        },
+      }
+    );
+
+    const paymentData =
+      typeof response.body === "string"
+        ? JSON.parse(response.body)
+        : response.body;
+
+    if (paymentData.status !== "COMPLETED") {
+      return res.status(400).json({ error: "Payment incomplete or failed" });
+    }
+
+    return res.status(200).json({
+      message: "Payment captured successfully",
+      paymentData,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

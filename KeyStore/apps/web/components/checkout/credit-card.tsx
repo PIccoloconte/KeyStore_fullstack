@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-// Schema di validazione
+// validation schema using Yup
 const creditCardSchema = Yup.object().shape({
   cardNumber: Yup.string()
     .required("Numero carta obbligatorio")
@@ -68,7 +68,7 @@ const CreditCard: React.FC<CreditCardProps> = ({
     cardholderName: "",
   };
 
-  // Funzione per formattare il numero della carta
+  // Function to format the card number
   const formatCardNumber = (value: string) => {
     const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     const matches = v.match(/\d{4,16}/g);
@@ -84,7 +84,7 @@ const CreditCard: React.FC<CreditCardProps> = ({
     }
   };
 
-  // Funzione per formattare la data di scadenza
+  // Function to format the expiry date
   const formatExpiryDate = (value: string) => {
     const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     if (v.length >= 2) {
@@ -120,6 +120,7 @@ const CreditCard: React.FC<CreditCardProps> = ({
           <Formik
             initialValues={initialCreditCardValues}
             validationSchema={creditCardSchema}
+            //trigger by clicking the "pay with credit card" button in page.tsx
             onSubmit={(values) => {
               handlePayment(values);
             }}
