@@ -1,19 +1,29 @@
 import ProductClient from "@/components/SingleProduct/product-client";
 import { Game } from "@/Types";
-import axios from "axios";
 
 async function getGame(id: string): Promise<Game | null> {
   try {
-    const response = await axios.get<Game>(
+    const response = await fetch(
       `${process.env.API_URL || "http://localhost:3000"}/api/games/${id}`,
       {
-        timeout: 10000,
         headers: {
           "Content-Type": "application/json",
         },
+        // waiting for max time 10 seconds for response
+        signal: AbortSignal.timeout(10000),
+        // Revalidate every 5 minutes for individual games
+        next: {
+          revalidate: 300,
+        },
       }
     );
-    return response.data;
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: Game = await response.json();
+    return data;
   } catch (error) {
     console.error("Error fetching game:", error);
     return null;

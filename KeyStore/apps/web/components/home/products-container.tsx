@@ -1,26 +1,36 @@
 import { ChevronRight } from "lucide-react";
 import GameCard from "../gameCard";
-import axios from "axios";
 import { Game } from "@/Types";
 
 interface ProductsContainerProps {
   filter?: string;
   categoryName?: string;
 }
-//fetch games from API
+
+// fetch games from API
 async function getGames(): Promise<Game[]> {
   try {
-    const response = await axios.get<Game[]>(
+    const response = await fetch(
       `${process.env.API_URL || "http://localhost:3000"}/api/games`,
       {
-        timeout: 5000,
         headers: {
           "Content-Type": "application/json",
+        },
+        // waiting for max time 5 seconds for response
+        signal: AbortSignal.timeout(5000),
+
+        next: {
+          revalidate: 120,
         },
       }
     );
 
-    return response.data;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: Game[] = await response.json();
+    return data;
   } catch (error) {
     console.error("Error fetching games:", error);
     return [];

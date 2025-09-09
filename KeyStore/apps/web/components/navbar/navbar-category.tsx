@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Search, Monitor, Gamepad2 } from "lucide-react";
+import { Search } from "lucide-react";
 import { FaPlaystation, FaXbox } from "react-icons/fa";
 import { BsNintendoSwitch } from "react-icons/bs";
 import { MdMonitor } from "react-icons/md";

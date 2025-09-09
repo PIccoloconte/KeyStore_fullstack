@@ -21,12 +21,12 @@ export default function ProductClient({ game }: { game: Game }) {
   const productInCart = isInCart(game._id);
 
   return (
-    <div className="min-h-screen bg-gray-50 mt-[104px] md:mt-20">
+    <div className="min-h-screen bg-gray-900 mt-[104px] md:mt-20">
       <div className="max-w-7xl mx-auto p-6">
         <div className="grid lg:grid-cols-2 gap-8 mb-12">
           {/* Left - Game Image */}
-          <div className="bg-white rounded-lg p-4">
-            <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center mb-4">
+          <div className="bg-gray-800 rounded-lg p-4">
+            <div className="aspect-video bg-gray-800 rounded-lg flex items-center justify-center mb-4">
               <Image
                 src={game.images[selectedImage] || "/placeholder.svg"}
                 alt={game.title}
@@ -43,7 +43,7 @@ export default function ProductClient({ game }: { game: Game }) {
                   className={`flex-shrink-0 w-16 h-16 rounded border-2 transition-colors ${
                     selectedImage === index
                       ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      : "border-gray-900 hover:border-gray-900"
                   }`}
                 >
                   <Image
@@ -59,7 +59,7 @@ export default function ProductClient({ game }: { game: Game }) {
           </div>
 
           {/* Right - Product Info */}
-          <div className="bg-white rounded-lg p-6">
+          <div className="bg-gray-800 rounded-lg p-6">
             <div className="flex items-center gap-2 mb-2">
               <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                 {game.platform.map((p: string) => p.toUpperCase()).join(", ")}
@@ -76,8 +76,8 @@ export default function ProductClient({ game }: { game: Game }) {
               )}
             </div>
 
-            <h1 className="text-3xl font-bold mb-2">{game.title}</h1>
-            <p className="text-gray-600 mb-4">Category: {game.category}</p>
+            <h1 className="text-3xl text-white font-bold mb-2">{game.title}</h1>
+            <p className="text-gray-300 mb-4">Category: {game.category}</p>
 
             <div className="flex items-center gap-3 mb-6">
               <span className="text-3xl font-bold text-blue-600">
@@ -120,15 +120,15 @@ export default function ProductClient({ game }: { game: Game }) {
             )}
             <div className="space-y-3 mb-6">
               {" "}
-              <div className="flex items-center gap-3 text-sm text-gray-600">
+              <div className="flex items-center gap-3 text-sm text-gray-300">
                 <Download className="w-4 h-4" />
                 <span>Digital delivery - Instant download</span>{" "}
               </div>{" "}
-              <div className="flex items-center gap-3 text-sm text-gray-600">
+              <div className="flex items-center gap-3 text-sm text-gray-300">
                 <Shield className="w-4 h-4" />
                 <span>Official keys directly from publishers</span>{" "}
               </div>{" "}
-              <div className="flex items-center gap-3 text-sm text-gray-600">
+              <div className="flex items-center gap-3 text-sm text-gray-300">
                 <Headphones className="w-4 h-4" />
                 <span>24/7 customer support</span>{" "}
               </div>{" "}
@@ -137,19 +137,21 @@ export default function ProductClient({ game }: { game: Game }) {
         </div>
 
         {/* About Section - Contenuto statico */}
-        <div className="bg-white rounded-lg p-6 mb-8">
-          <h2 className="text-2xl font-bold mb-4">{`About ${game.title}`}</h2>
-          <p className="text-gray-700 leading-relaxed">{game.description}</p>
+        <div className="bg-gray-800 rounded-lg p-6 mb-8">
+          <h2 className="text-2xl text-white font-bold mb-4">{`About ${game.title}`}</h2>
+          <p className="text-gray-300 leading-relaxed">{game.description}</p>
         </div>
         {/* System Requirements */}
-        <div className="bg-white rounded-lg p-6 mb-8">
-          <h2 className="text-2xl font-bold mb-6">System Requirements</h2>
+        <div className="bg-gray-800 rounded-lg p-6 mb-8">
+          <h2 className="text-2xl text-white font-bold mb-6">
+            System Requirements
+          </h2>
           <div className="grid md:grid-cols-2 gap-8">
             <div>
-              <h3 className="font-semibold text-lg mb-4">
+              <h3 className="font-semibold text-white text-lg mb-4">
                 Minimum Requirements
               </h3>
-              <div className="space-y-2 text-sm">
+              <div className="space-y-2 text-sm text-gray-300">
                 <div>
                   <span className="font-medium">OS:</span> Windows 10 64-bit
                 </div>
@@ -178,10 +180,10 @@ export default function ProductClient({ game }: { game: Game }) {
               </div>
             </div>
             <div>
-              <h3 className="font-semibold text-lg mb-4">
+              <h3 className="font-semibold text-white text-lg mb-4">
                 Recommended Requirements
               </h3>
-              <div className="space-y-2 text-sm">
+              <div className="space-y-2 text-sm text-gray-300">
                 <div>
                   <span className="font-medium">OS:</span> Windows 10 64-bit
                 </div>

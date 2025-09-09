@@ -12,7 +12,6 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useAuth } from "@/context";
-import { useRouter } from "next/navigation";
 import NavbarCategory from "./navbar-category";
 
 export default function Navbar() {

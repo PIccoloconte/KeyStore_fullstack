@@ -36,9 +36,10 @@ interface BillingAddressData {
 interface BillingAddressProps {
   initialData?: BillingAddressData;
   onSave?: (data: BillingAddressData) => void;
+  setAddressFormValid: (valid: boolean) => void;
 }
 //starting data
-const BillingAddress: React.FC<BillingAddressProps> = ({
+const BillingAddress = ({
   initialData = {
     fullName: "",
     address: "",
@@ -47,7 +48,8 @@ const BillingAddress: React.FC<BillingAddressProps> = ({
     country: "",
   },
   onSave,
-}) => {
+  setAddressFormValid,
+}: BillingAddressProps) => {
   const [isEditing, setIsEditing] = useState(true);
 
   const handleSave = (values: BillingAddressData) => {
@@ -102,7 +104,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({
                   // Edit Mode
                   <div className="space-y-4">
                     <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-medium">
+                      <h3 className="text-lg font-medium text-white">
                         Edit Billing Address
                       </h3>
                       {/*Save button*/}
@@ -129,6 +131,7 @@ const BillingAddress: React.FC<BillingAddressProps> = ({
                           onClick={() => {
                             resetForm();
                             setIsEditing(true);
+                            setAddressFormValid(false);
                           }}
                         >
                           <X className="w-4 h-4" />

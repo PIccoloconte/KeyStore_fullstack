@@ -14,6 +14,7 @@ const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   //creditCardFormRef serves to access formik from outside the component
   const creditCardFormRef = useRef<any>(null);
+  const [addressFormValid, setAddressFormValid] = useState(false);
   const [creditCardFormValid, setCreditCardFormValid] = useState(false);
   const { cart, isLoggedIn, clearCart } = useAuth();
   const router = useRouter();
@@ -97,19 +98,23 @@ const Checkout = () => {
 
   // Billing address save handler
   const handleBillingAddressSave = (addressData: any) => {
+    setAddressFormValid(true);
     console.log("Saving billing address:", addressData);
     //TODO: add logic to save in local storage or in DB
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className="mt-[95px] md:mt-20 min-h-screen text-white p-6">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8">
         {/* Left Column */}
         <div className="space-y-8">
           {/* Billing Address */}
           <div>
             <h2 className="text-xl font-medium mb-4">Billing address</h2>
-            <BillingAddress onSave={handleBillingAddressSave} />
+            <BillingAddress
+              onSave={handleBillingAddressSave}
+              setAddressFormValid={setAddressFormValid}
+            />
           </div>
 
           {/* Payment Methods */}
@@ -147,7 +152,7 @@ const Checkout = () => {
                 cart.items.map((item, index) => (
                   <div key={index} className="flex justify-between items-start">
                     <div className="flex-1">
-                      <div className="font-medium text-sm mb-1">
+                      <div className="font-medium text-sm mb-1 text-white">
                         {item.title}
                       </div>
                       <div className="text-gray-400 text-sm">
@@ -182,7 +187,7 @@ const Checkout = () => {
                 </div>
 
                 {/* Total */}
-                <div className="flex justify-between text-lg font-medium">
+                <div className="flex justify-between text-lg font-medium text-white">
                   <span>Total</span>
                   <span>
                     €
@@ -214,7 +219,7 @@ const Checkout = () => {
                   disabled={
                     isProcessing ||
                     (selectedPayment === "credit-card" &&
-                      !creditCardFormValid) ||
+                      (!creditCardFormValid || !addressFormValid)) ||
                     selectedPayment === "paypal"
                   }
                   className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 font-medium py-3 mt-6 cursor-pointer"

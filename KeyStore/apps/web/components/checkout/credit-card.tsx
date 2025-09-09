@@ -54,13 +54,13 @@ interface CreditCardProps {
   creditCardFormRef: React.RefObject<any>;
 }
 
-const CreditCard: React.FC<CreditCardProps> = ({
+const CreditCard = ({
   selectedPayment,
   setSelectedPayment,
   handlePayment,
   setCreditCardFormValid,
   creditCardFormRef,
-}) => {
+}: CreditCardProps) => {
   const initialCreditCardValues = {
     cardNumber: "",
     expiryDate: "",
@@ -113,7 +113,7 @@ const CreditCard: React.FC<CreditCardProps> = ({
               <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
             </svg>
           </div>
-          <span className="font-medium">Credit Card</span>
+          <span className="font-medium text-white">Credit Card</span>
         </div>
         {/* Credit Card Form - Only show when credit card is selected */}
         {selectedPayment === "credit-card" && (
@@ -134,6 +134,7 @@ const CreditCard: React.FC<CreditCardProps> = ({
               return (
                 <Form className="space-y-4 mt-2">
                   <div>
+                    {/* Card Number Field */}
                     <label className="block text-sm font-medium text-gray-300 mb-1">
                       Card Number
                     </label>
@@ -162,6 +163,7 @@ const CreditCard: React.FC<CreditCardProps> = ({
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
+                      {/* Expiry Date Field */}
                       <label className="block text-sm font-medium text-gray-300 mb-1">
                         Expiry Date
                       </label>
@@ -188,6 +190,7 @@ const CreditCard: React.FC<CreditCardProps> = ({
                       />
                     </div>
                     <div>
+                      {/* CVV Field */}
                       <label className="block text-sm font-medium text-gray-300 mb-1">
                         CVV
                       </label>
@@ -211,6 +214,7 @@ const CreditCard: React.FC<CreditCardProps> = ({
                   </div>
 
                   <div>
+                    {/* Cardholder Name Field */}
                     <label className="block text-sm font-medium text-gray-300 mb-1">
                       Cardholder Name
                     </label>

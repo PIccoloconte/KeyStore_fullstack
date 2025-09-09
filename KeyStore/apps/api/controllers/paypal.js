@@ -1,5 +1,6 @@
 import got from "got";
 
+//function to get access token from paypal
 const getAccessToken = async () => {
   try {
     const response = await got.post(
@@ -19,7 +20,7 @@ const getAccessToken = async () => {
   }
 };
 
-// Funzione per creare un pagamento
+// function to create a paypal payment
 export const createPayPalPayment = async (req, res) => {
   try {
     const accessToken = await getAccessToken();
@@ -35,6 +36,7 @@ export const createPayPalPayment = async (req, res) => {
           intent: "CAPTURE",
           purchase_units: [
             {
+              //plaeceholder item
               items: [
                 {
                   name: "Halo",
@@ -77,7 +79,7 @@ export const createPayPalPayment = async (req, res) => {
       }
     );
 
-    //ResponseData serve per parsare la response che a volte arriva come stringa e a volte come oggetto
+    //ResponseData could be string or object based on got version
     const responseData =
       typeof response.body === "string"
         ? JSON.parse(response.body)
@@ -93,7 +95,7 @@ export const createPayPalPayment = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+// function to capture a paypal payment
 export const capturePayment = async (req, res) => {
   try {
     const accessToken = await getAccessToken();

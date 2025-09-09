@@ -1,7 +1,5 @@
 import { ChevronRight } from "lucide-react";
 import GameCard from "@/components/gameCard";
-import GameCardLoading from "@/components/placeholder/gameCardLoading";
-import { Suspense } from "react";
 import axios, { AxiosError } from "axios";
 import { Game } from "@/Types";
 
@@ -11,7 +9,7 @@ interface PageProps {
     platform?: string;
   }>;
 }
-
+//search params arrives from navbar-category.tsx
 async function getGames(searchParams: {
   search?: string;
   platform?: string;
@@ -19,20 +17,21 @@ async function getGames(searchParams: {
   try {
     const params: Record<string, string> = {};
 
+    //if user search with the searchbar
     if (searchParams.search) {
       params.search = searchParams.search;
     }
-
+    //if user click on a platform in the navbar
     if (searchParams.platform) {
       params.platform = searchParams.platform;
     }
 
-    // Chiamata diretta con axios - tutto in una riga
+    //don't need revalidate , than i can use axios
     const response = await axios.get<Game[]>(
       `${process.env.API_URL || "http://localhost:3000/api"}/games`,
       {
         // Axios convert object params in query string
-        //Es: { search: "mario", platform: "PC" } diventa "?search=mario&platform=PC"
+        //Es: { search: "mario", platform: "PC" } become "?search=mario&platform=PC"
         params,
         //delete request after 5 s
         timeout: 5000,
@@ -44,21 +43,18 @@ async function getGames(searchParams: {
 
     return response.data;
   } catch (error) {
-    // Logga l'errore e ritorna array vuoto per evitare crash
     console.error("Error fetching games:", error);
-    // Ritorna un array vuoto invece di far crashare l'applicazione
-    // Questo permette alla UI di mostrare il messaggio "Nessun gioco trovato"
-    // invece di una pagina di errore
+    // return an empty array instead of crashing the application
     return [];
   }
 }
-
+//dynamic title for the page
 function getSectionTitle(searchParams: { search?: string; platform?: string }) {
   if (searchParams.search) {
-    return `Risultati per "${searchParams.search}"`;
+    return `Result for "${searchParams.search}"`;
   }
   if (searchParams.platform) {
-    return `Giochi ${searchParams.platform}`;
+    return `Games ${searchParams.platform}`;
   }
   return "Trending";
 }
@@ -79,10 +75,10 @@ export default async function Page({ searchParams }: PageProps) {
 
         {games.length === 0 ? (
           <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-lg text-gray-400">Nessun gioco trovato</div>
+            <div className="text-lg text-gray-400">No game found</div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 grid-rows-2 ">
             {games.map((game) => (
               <GameCard key={game._id} game={game} className="" />
             ))}

@@ -101,7 +101,7 @@ export default function HeroCarouselClient({ games }: Props) {
         {/* Previous slide button */}
         <button
           onClick={prevSlide}
-          className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center text-white transition-colors z-10"
+          className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center text-white transition-colors z-10 cursor-pointer"
           aria-label="Previous slide"
         >
           <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -109,7 +109,7 @@ export default function HeroCarouselClient({ games }: Props) {
         {/* Next slide button */}
         <button
           onClick={nextSlide}
-          className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center text-white transition-colors z-10"
+          className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center text-white transition-colors z-10 cursor-pointer"
           aria-label="Next slide"
         >
           <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -121,7 +121,7 @@ export default function HeroCarouselClient({ games }: Props) {
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-colors ${
+            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-colors cursor-pointer ${
               index === currentSlide ? "bg-white" : "bg-white/40"
             }`}
             aria-label={`Go to slide ${index + 1}`}

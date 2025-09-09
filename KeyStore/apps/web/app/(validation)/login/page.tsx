@@ -90,14 +90,14 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
-      <Card className="w-full max-w-md">
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 p-4">
+      <Card className="w-full max-w-md bg-gray-800 border-gray-800">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
-            <LogIn className="w-6 h-6" />
+          <CardTitle className="text-2xl text-center flex items-center justify-center gap-2 text-white">
+            <LogIn className="w-6 h-6 " />
             Log In
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-center text-gray-300">
             Insert your credentials to access your account
           </CardDescription>
         </CardHeader>
@@ -117,7 +117,9 @@ const LoginPage: React.FC = () => {
               <form className="space-y-4" onSubmit={formikHandleSubmit}>
                 {/* Username Field */}
                 <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
+                  <Label htmlFor="username" className="text-white">
+                    Username
+                  </Label>
                   <div className="relative">
                     <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Field
@@ -126,7 +128,7 @@ const LoginPage: React.FC = () => {
                       name="username"
                       type="text"
                       placeholder="Inserisci il tuo username"
-                      className={`pl-10 ${
+                      className={`pl-10 border-gray-900 ${
                         errors.username && touched.username
                           ? "border-red-500"
                           : ""
@@ -142,7 +144,9 @@ const LoginPage: React.FC = () => {
 
                 {/* Password Field */}
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-white">
+                    Password
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Field
@@ -151,7 +155,7 @@ const LoginPage: React.FC = () => {
                       name="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Inserisci la tua password"
-                      className={`pl-10 pr-10 ${
+                      className={`pl-10 pr-10 border-gray-900${
                         errors.password && touched.password
                           ? "border-red-500"
                           : ""
@@ -160,7 +164,7 @@ const LoginPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 h-4 w-4 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1.5 h-4 w-4 text-gray-400 hover:text-gray-600"
                     >
                       {showPassword ? <EyeOff /> : <Eye />}
                     </button>
@@ -227,17 +231,17 @@ const LoginPage: React.FC = () => {
           <div className="mt-6 mb-4">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-t border-gray-900" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">or</span>
+                <span className="px-2 bg-gray-900 text-gray-300">or</span>
               </div>
             </div>
           </div>
 
           {/* Registration Link */}
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-300">
               Don't have an account?{" "}
               <a href="/register" className="text-blue-600 hover:underline">
                 Register here
@@ -246,9 +250,9 @@ const LoginPage: React.FC = () => {
           </div>
 
           {/* Demo Info */}
-          <div className="mt-4 p-3 bg-gray-100 rounded-lg">
-            <p className="text-xs text-gray-600 text-center">
-              <strong>Demo:</strong> Use "admin" as username and "password" as
+          <div className="mt-4 p-3 bg-gray-900 rounded-lg">
+            <p className="text-xs  text-gray-300 text-center">
+              <strong>Demo:</strong> Use "marco" as username and "Asdf1234" as
               password
             </p>
           </div>

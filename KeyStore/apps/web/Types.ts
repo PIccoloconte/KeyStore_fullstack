@@ -55,3 +55,14 @@ export type AuthContextType = {
   isInCart: (gameId: string) => boolean;
   clearCart: () => void;
 };
+
+export interface Order {
+  _id: string;
+  gameId: string;
+  keyAssigned: string;
+  pricePaid: number;
+  title: string;
+  imageUrl?: string;
+  userId: string;
+  createdAt: string;
+}

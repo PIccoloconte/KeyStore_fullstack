@@ -89,14 +89,14 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
-      <Card className="w-full max-w-md">
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 p-4">
+      <Card className="w-full max-w-md bg-gray-800 border-gray-900">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
+          <CardTitle className="text-2xl text-center text-white flex items-center justify-center gap-2">
             <UserPlus className="w-6 h-6" />
             Registration
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-center text-gray-300">
             Create your account by filling in the fields below
           </CardDescription>
         </CardHeader>
@@ -116,7 +116,9 @@ const RegisterPage: React.FC = () => {
               <form className="space-y-4" onSubmit={formikHandleSubmit}>
                 {/* Username Field */}
                 <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
+                  <Label htmlFor="username" className="text-white">
+                    Username
+                  </Label>
                   <div className="relative">
                     <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Field
@@ -125,7 +127,7 @@ const RegisterPage: React.FC = () => {
                       name="username"
                       type="text"
                       placeholder="Inserisci il tuo username"
-                      className={`pl-10 ${
+                      className={`pl-10 border-gray-900 ${
                         errors.username && touched.username
                           ? "border-red-500"
                           : ""
@@ -141,7 +143,9 @@ const RegisterPage: React.FC = () => {
 
                 {/* Email Field */}
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="text-white">
+                    Email
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Field
@@ -150,7 +154,7 @@ const RegisterPage: React.FC = () => {
                       name="email"
                       type="email"
                       placeholder="Inserisci la tua email"
-                      className={`pl-10 ${
+                      className={`pl-10 border-gray-900 ${
                         errors.email && touched.email ? "border-red-500" : ""
                       }`}
                     />
@@ -164,7 +168,9 @@ const RegisterPage: React.FC = () => {
 
                 {/* Password Field */}
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-white">
+                    Password
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Field
@@ -173,7 +179,7 @@ const RegisterPage: React.FC = () => {
                       name="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Inserisci la tua password"
-                      className={`pl-10 pr-10 ${
+                      className={`pl-10 pr-10 border-gray-900 ${
                         errors.password && touched.password
                           ? "border-red-500"
                           : ""
@@ -182,7 +188,7 @@ const RegisterPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 h-4 w-4 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1.5 h-4 w-4 text-gray-400 hover:text-gray-600"
                     >
                       {showPassword ? <EyeOff /> : <Eye />}
                     </button>
@@ -196,16 +202,18 @@ const RegisterPage: React.FC = () => {
 
                 {/* Confirm Password Field */}
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Conferma Password</Label>
+                  <Label htmlFor="confirmPassword" className="text-white">
+                    Confirm Password
+                  </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3 top-1.5 h-4 w-4 text-gray-400" />
                     <Field
                       as={Input}
                       id="confirmPassword"
                       name="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Conferma la tua password"
-                      className={`pl-10 pr-10 ${
+                      className={`pl-10 pr-10 border-gray-900 ${
                         errors.confirmPassword && touched.confirmPassword
                           ? "border-red-500"
                           : ""

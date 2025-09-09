@@ -4,7 +4,7 @@ import CartNavbarState from "./cart-navbar-state";
 
 const CartNavbar = () => {
   return (
-    <header className="border-b border-gray-700 bg-black px-4 py-3">
+    <header className="border-b border-gray-700 fixed top-0 w-full bg-black px-4 py-3 z-50">
       <div className="mb-4 md:mb-0 max-w-7xl mx-auto flex items-center justify-between sm:h-8 md:h-auto">
         <Link href="/">
           <div className="flex items-center space-x-2">

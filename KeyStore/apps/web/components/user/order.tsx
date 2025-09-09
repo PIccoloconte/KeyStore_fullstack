@@ -10,10 +10,10 @@ export default function Order() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Fetch orders from the API
     const fetchOrders = async () => {
       const token = localStorage.getItem("token");
-      //http://localhost:3000/api/orders localhost
-      //http://192.168.205.140:3000/api/orders mobile hotspot
+
       const res = await fetch("http://localhost:3000/api/orders", {
         method: "GET",
         headers: {
@@ -22,8 +22,9 @@ export default function Order() {
         },
       });
 
+      // Handle error responses
       if (!res.ok) {
-        throw new Error("Errore nel fetch degli ordini");
+        throw new Error("Error fetching orders");
       }
 
       const data = await res.json();
@@ -34,6 +35,7 @@ export default function Order() {
     fetchOrders();
   }, []);
 
+  // Show loading state while fetching orders
   if (loading) {
     return (
       <div>
@@ -42,9 +44,6 @@ export default function Order() {
       </div>
     );
   }
-  if (orders) {
-    console.log("Fetched orders:", orders);
-  }
 
   return (
     <div className="flex flex-col-reverse gap-4">
@@ -52,13 +51,14 @@ export default function Order() {
         <Card key={order._id} className="bg-gray-800 border-gray-700">
           <CardContent className="p-6">
             {/* Order Header */}
-            <div className="flex items-start gap-4 mb-6">
+            <div className="flex items-start gap-4 mb-6 justify-between">
+              {/* Order Image ,title, platformn price */}
               <img
                 src={order.imageUrl || "/placeholder.svg"}
                 alt={order.title}
                 className="w-20 h-20 rounded object-cover flex-shrink-0"
               />
-              <div className="flex-1 min-w-0">
+              <div className="flex-1  hidden md:block">
                 <h3 className="text-lg font-medium text-white mb-2 leading-tight">
                   {order.title}
                 </h3>
@@ -88,6 +88,18 @@ export default function Order() {
                 </span>
               </div>
             </div>
+            <div className="md:hidden text-gray-400 text-sm flex gap-2 mb-2 flex-wrap">
+              Platform:
+              {order.gameId.platform.map((el: any) => (
+                <Badge
+                  variant="outline"
+                  className="border-orange-500 text-white"
+                  key={el}
+                >
+                  {" " + el}
+                </Badge>
+              ))}
+            </div>
 
             <Separator className="bg-gray-700 mb-4" />
 
@@ -109,9 +121,10 @@ export default function Order() {
                 <span className="text-white text-lg">{order.pricePaid} €</span>
               </div>
               <Separator className="bg-gray-700" />
+              {/*Game key*/}
               <div className="flex justify-between font-medium">
                 <span className="text-white">Key</span>
-                <span className="text-white text-lg uppercase">
+                <span className="text-white  md:text-lg uppercase">
                   {order.keyAssigned}
                 </span>
               </div>
@@ -120,14 +133,15 @@ export default function Order() {
             <Separator className="bg-gray-700 mb-4" />
 
             {/* Order Details */}
-            <div className="flex items-center justify-between text-sm text-gray-400">
-              <div className="flex items-center gap-4">
-                <span>Order #{order._id}</span>
+            <div className="flex flex-col md:flex-row gap-2 md:gap-0 items-center justify-between text-sm text-gray-400">
+              <div className="flex items-center gap-4 w-full md:w-auto justify-between">
+                {/* Order ID and Date */}
+                <span className="w-max">Order #{order._id}</span>
 
-                <span>•</span>
+                <span className="hidden md:block ">•</span>
                 <span>{formatDate(order.createdAt ?? "")}</span>
               </div>
-              <button className="text-gray-400 hover:text-white underline transition-colors">
+              <button className=" w-full md:w-auto text-start md:text-right text-gray-400 hover:text-white underline transition-colors cursor-pointer ">
                 Download invoice
               </button>
             </div>

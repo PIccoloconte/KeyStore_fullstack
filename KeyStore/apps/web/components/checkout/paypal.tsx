@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { useAuth } from "@/context";
 import { Card, CardContent } from "@/components/ui/card";
 
 const initialPayPalOptions = {
@@ -89,14 +88,28 @@ const Paypal = ({
     >
       <CardContent className="p-4">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
-            <span className="text-white font-bold text-sm">PP</span>
+          <div className="bg-[#f4ca43] w-8 h-8  rounded flex items-center justify-center font-bold text-sm">
+            <span className=" text-[#253B80] ">P</span>
+            <span className=" text-[#2997D8] ">P</span>
           </div>
-          <span className="font-medium">PayPal</span>
+          <span className="font-medium text-white">PayPal</span>
         </div>
+
         {selectedPayment === "paypal" && (
           <div className="mt-4">
             <PayPalScriptProvider options={initialPayPalOptions}>
+              <div className="text-gray-300 mb-4">
+                <div>
+                  <p>Demo: </p>
+                  <p>
+                    Use <strong>"sb-p2ylv45984967@personal.example.com"</strong>{" "}
+                    as email
+                  </p>
+                </div>
+                <p>
+                  Use <strong>"iT7T?P5C"</strong> as password
+                </p>
+              </div>
               <PayPalButtons
                 createOrder={onCreateOrder}
                 onApprove={onApprove}

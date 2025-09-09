@@ -9,7 +9,6 @@ interface GameCardProps {
 }
 
 const GameCard = ({ game, className }: GameCardProps) => {
-  // const { game } = props;
   return (
     <Link href={`/games/${game._id}`} style={{ textDecoration: "none" }}>
       <Card

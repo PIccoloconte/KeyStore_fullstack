@@ -105,7 +105,7 @@ const CartPreview = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Section */}
         <div className="lg:col-span-2">
-          <h2 className="text-2xl font-bold mb-6">Cart</h2>
+          <h2 className="text-2xl text-white font-bold mb-6">Cart</h2>
 
           {loading || !cart ? (
             <div className="bg-gray-700 rounded-lg mb-8 p-6 text-center animate-pulse h-[202px] content-center">
@@ -129,10 +129,12 @@ const CartPreview = () => {
                     alt={item.title}
                     width={160}
                     height={120}
-                    className="rounded-lg object-cover"
+                    className="rounded-lg object-cover h-[120px]"
                   />
                   <div className="flex-1">
-                    <h3 className="text-lg font-medium mb-2">{item.title}</h3>
+                    <h3 className="text-lg text-white font-medium mb-2 text-center md:text-left">
+                      {item.title}
+                    </h3>
                     <div className="flex items-center space-x-2 mb-4">
                       <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
                       <span className="text-sm text-gray-300">
@@ -143,7 +145,7 @@ const CartPreview = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold mb-4">
+                    <div className="text-2xl text-white font-bold mb-4">
                       {item.price} €
                     </div>
                   </div>
@@ -171,7 +173,7 @@ const CartPreview = () => {
         {/* Summary Section */}
         <div className="lg:col-span-1">
           <div className="bg-gray-800 rounded-lg p-6 sticky top-8">
-            <h2 className="text-2xl font-bold mb-6">Summary</h2>
+            <h2 className="text-2xl text-white font-bold mb-6">Summary</h2>
 
             {loading || !cart ? (
               <CartSummaryLoading />
@@ -192,8 +194,8 @@ const CartPreview = () => {
               </div>
             ) : (
               <div className="mb-6">
-                <div className="flex justify-between mb-4">
-                  <span className="text-gray-300">Total</span>
+                <div className="flex text-gray-300 justify-between mb-4">
+                  <span>Total</span>
                   <span>
                     {cart.items
                       .reduce((acc, item) => acc + item.price, 0)
@@ -202,7 +204,7 @@ const CartPreview = () => {
                   </span>
                 </div>
                 <div className="border-t border-gray-700 pt-4">
-                  <div className="flex justify-between text-xl font-bold">
+                  <div className="flex justify-between text-white text-xl font-bold">
                     <span>Totale</span>
                     <span>
                       {cart.items
