@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { User, Cart, AuthContextType } from "./Types";
+import { getApiUrl } from "@/utils/config";
 
 const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
@@ -45,7 +46,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (isLoggedIn && user) {
         try {
           const token = localStorage.getItem("token");
-          const response = await fetch(`http://localhost:3000/api/cart`, {
+          const response = await fetch(`${getApiUrl()}/api/cart`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -112,7 +113,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const token = localStorage.getItem("token");
         if (!token) return null;
 
-        const response = await fetch(`http://localhost:3000/api/cart`, {
+        const response = await fetch(`${getApiUrl()}/api/cart`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

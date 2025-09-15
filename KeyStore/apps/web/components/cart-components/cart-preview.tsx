@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { useAuth } from "@/context";
 import { useRouter } from "next/navigation";
 import CartSummaryLoading from "../placeholder/cartSummuryLoading";
+import { getApiUrl } from "@/utils/config";
 
 const CartPreview = () => {
   const [loading, setLoading] = useState(false);
@@ -33,7 +34,7 @@ const CartPreview = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:3000/api/cart", {
+      const response = await fetch(`${getApiUrl()}/api/cart`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -65,7 +66,7 @@ const CartPreview = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:3000/api/cart/${gameId}`, {
+      const response = await fetch(`${getApiUrl()}/api/cart/${gameId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

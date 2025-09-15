@@ -1,22 +1,20 @@
 import ProductClient from "@/components/SingleProduct/product-client";
 import { Game } from "@/Types";
+import { getApiUrl } from "@/utils/config";
 
 async function getGame(id: string): Promise<Game | null> {
   try {
-    const response = await fetch(
-      `${process.env.API_URL || "http://localhost:3000"}/api/games/${id}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // waiting for max time 10 seconds for response
-        signal: AbortSignal.timeout(10000),
-        // Revalidate every 5 minutes for individual games
-        next: {
-          revalidate: 300,
-        },
-      }
-    );
+    const response = await fetch(`${getApiUrl()}/api/games/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // waiting for max time 10 seconds for response
+      signal: AbortSignal.timeout(10000),
+      // Revalidate every 5 minutes for individual games
+      next: {
+        revalidate: 300,
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

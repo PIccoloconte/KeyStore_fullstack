@@ -2,6 +2,7 @@
 import React from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { Card, CardContent } from "@/components/ui/card";
+import { getApiUrl } from "@/utils/config";
 
 const initialPayPalOptions = {
   clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "",
@@ -27,7 +28,7 @@ const Paypal = ({
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/paypal", {
+      const response = await fetch(`${getApiUrl()}/api/paypal`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +56,7 @@ const Paypal = ({
       if (!data?.orderID) throw new Error("Order ID non trovato in data");
 
       const response = await fetch(
-        `http://localhost:3000/api/paypal/capturePayment/${data.orderID}`,
+        `${getApiUrl()}/api/paypal/capturePayment/${data.orderID}`,
         {
           method: "GET",
           headers: {

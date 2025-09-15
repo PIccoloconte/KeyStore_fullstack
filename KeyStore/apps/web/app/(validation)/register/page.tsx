@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+import { getApiUrl } from "@/utils/config";
 
 interface RegistrationFormValues {
   username: string;
@@ -73,7 +74,7 @@ const RegisterPage: React.FC = () => {
         /*"http://192.168.205.140:3000/api/auth/register" mobile hotspot
         "http://localhost:3000/api/auth/register" localhost*/
       }
-      const res = await fetch("http://192.168.205.140:3000/api/auth/register", {
+      const res = await fetch(`${getApiUrl()}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),

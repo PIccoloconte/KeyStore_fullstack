@@ -6,9 +6,9 @@ Se stai eseguendo npm run build e poi npm start, NODE_ENV sarà "production".*/
 
 const isDev = process.env.NODE_ENV === "development";
 const API_URL = isDev
-  ? "http://localhost:3001" // backend locale in sviluppo
-  : // "http://192.168.205.140:3001" // backend locale in sviluppo con hotspot mobile
-    process.env.NEXT_PUBLIC_API_URL; // backend deployato in produzione
+  ? "http://localhost:3000" // local backend in development //fino al 14/09/25 usavo la porta 3001 , ma per errore e funzionava
+  : // "http://192.168.205.140:3000" // local backend with hotspot mobile
+    process.env.NEXT_PUBLIC_API_URL; // backend deployed in production
 
 const nextConfig: NextConfig = {
   async rewrites() {
@@ -24,17 +24,15 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
-        pathname: "/**", // accetta tutte le immagini da Unsplash
+        pathname: "/**", // accept all images from Unsplash
       },
       {
         protocol: "https",
         hostname: "plus.unsplash.com",
-        pathname: "/**", // accetta tutte le immagini da Unsplash
+        pathname: "/**", // accept all images from Unsplash
       },
     ],
   },
-
-  /* config options here */
 };
 
 export default nextConfig;

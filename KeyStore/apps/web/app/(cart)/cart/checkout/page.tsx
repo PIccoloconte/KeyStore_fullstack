@@ -8,6 +8,7 @@ import { useAuth } from "@/context";
 import CreditCard from "@/components/checkout/credit-card";
 import BillingAddress from "@/components/checkout/address";
 import Paypal from "@/components/checkout/paypal";
+import { getApiUrl } from "@/utils/config";
 
 const Checkout = () => {
   const [selectedPayment, setSelectedPayment] = useState("credit-card");
@@ -59,7 +60,7 @@ const Checkout = () => {
       }
 
       if (paymentSuccessful) {
-        const response = await fetch("http://localhost:3000/api/orders", {
+        const response = await fetch(`${getApiUrl()}/api/orders`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

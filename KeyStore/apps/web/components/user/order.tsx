@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import React, { useState, useEffect } from "react";
 import { formatDate } from "@/utils";
+import { getApiUrl } from "@/utils/config";
 
 export default function Order() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -14,7 +15,7 @@ export default function Order() {
     const fetchOrders = async () => {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:3000/api/orders", {
+      const res = await fetch(`${getApiUrl()}/api/orders`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

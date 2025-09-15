@@ -1,22 +1,20 @@
 import { Game } from "@/Types";
 import HeroCarouselClient from "./hero-carousel-client";
+import { getApiUrl } from "@/utils/config";
 
 async function getGames(): Promise<Game[]> {
   try {
-    const response = await fetch(
-      `${process.env.API_URL || "http://localhost:3000"}/api/games`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // waiting for max time 5 seconds for response
-        signal: AbortSignal.timeout(5000),
-        // Revalidate cache every 60 seconds
-        next: {
-          revalidate: 60,
-        },
-      }
-    );
+    const response = await fetch(`${getApiUrl()}/api/games`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // waiting for max time 5 seconds for response
+      signal: AbortSignal.timeout(5000),
+      // Revalidate cache every 60 seconds
+      next: {
+        revalidate: 60,
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

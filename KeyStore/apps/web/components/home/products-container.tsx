@@ -1,6 +1,7 @@
 import { ChevronRight } from "lucide-react";
 import GameCard from "../gameCard";
 import { Game } from "@/Types";
+import { getApiUrl } from "@/utils/config";
 
 interface ProductsContainerProps {
   filter?: string;
@@ -10,20 +11,17 @@ interface ProductsContainerProps {
 // fetch games from API
 async function getGames(): Promise<Game[]> {
   try {
-    const response = await fetch(
-      `${process.env.API_URL || "http://localhost:3000"}/api/games`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // waiting for max time 5 seconds for response
-        signal: AbortSignal.timeout(5000),
+    const response = await fetch(`${getApiUrl()}/api/games`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // waiting for max time 5 seconds for response
+      signal: AbortSignal.timeout(5000),
 
-        next: {
-          revalidate: 120,
-        },
-      }
-    );
+      next: {
+        revalidate: 120,
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

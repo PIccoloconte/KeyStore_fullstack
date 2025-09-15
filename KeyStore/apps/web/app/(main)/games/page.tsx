@@ -2,6 +2,7 @@ import { ChevronRight } from "lucide-react";
 import GameCard from "@/components/gameCard";
 import axios, { AxiosError } from "axios";
 import { Game } from "@/Types";
+import { getApiUrl } from "@/utils/config";
 
 interface PageProps {
   searchParams: Promise<{
@@ -27,19 +28,16 @@ async function getGames(searchParams: {
     }
 
     //don't need revalidate , than i can use axios
-    const response = await axios.get<Game[]>(
-      `${process.env.API_URL || "http://localhost:3000/api"}/games`,
-      {
-        // Axios convert object params in query string
-        //Es: { search: "mario", platform: "PC" } become "?search=mario&platform=PC"
-        params,
-        //delete request after 5 s
-        timeout: 5000,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axios.get<Game[]>(`${getApiUrl()}/api/games`, {
+      // Axios convert object params in query string
+      //Es: { search: "mario", platform: "PC" } become "?search=mario&platform=PC"
+      params,
+      //delete request after 5 s
+      timeout: 5000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     return response.data;
   } catch (error) {
