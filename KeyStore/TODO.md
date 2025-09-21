@@ -6,3 +6,10 @@
    metodo handlePlatformFilter() debba convertire le stringhe solo in lowercase
 
 Modicicata la porta di acesso su index.js a quella di render
+modificato su package.json di wev
+"scripts": {
+"dev": "next dev --turbopack",}
+in
+"scripts": {
+"dev": "next dev --turbopack -p 3001",}
+Modificato anche useCors su index.js

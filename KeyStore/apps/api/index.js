@@ -14,7 +14,14 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(cors());
+// app.use(cors());
+app.use(
+  cors({
+    origin: true, // more permissive than a specific list, but more secure than wildcard
+    credentials: true,
+    optionsSuccessStatus: 200, // browser legacy support
+  })
+);
 
 app.use("/api/games", gameRoutes);
 app.use("/api/auth", authRoutes);
@@ -29,8 +36,8 @@ app.get("/", (req, res) => {
 mongoose
   .connect(process.env.CONNECTION_URL)
   .then(() => {
-    app.listen(PORT, () => {
-      // {"0.0.0.0",} aggiunti per permettere l'accesso da IP esterni
+    app.listen(PORT, "0.0.0.0", () => {
+      // {"0.0.0.0",} guarantee access from external IPs
       console.log(`Server is running on ${PORT}`);
     });
   })
